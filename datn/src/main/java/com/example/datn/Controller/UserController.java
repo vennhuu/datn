@@ -74,11 +74,15 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/users")
     @APIMessage("Update a user")
-    public ResponseEntity<ResUser> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<ResUser> updateUser( @RequestBody User user) throws InvalidException {
 
-        User updUser = this.userService.updateUser(id, user);
+        if ( !this.userService.existId(user.getId()) ) {
+            throw new InvalidException("Không tìm thấy người dùng này") ;
+        }
+
+        User updUser = this.userService.updateUser(user.getId(), user);
         ResUser res = this.userService.convertUserToResUser(updUser);   
         return ResponseEntity.ok(res);
     }

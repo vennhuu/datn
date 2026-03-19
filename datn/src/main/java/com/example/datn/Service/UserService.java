@@ -40,6 +40,10 @@ public class UserService {
         return this.userRepository.existsByEmail(email ) ;
     }
 
+    public boolean existId ( long id ) {
+        return this.userRepository.existsById(id) ;
+    }
+
     public List<ResUser> getAllUsers() {
         return this.userRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
                 .stream()
@@ -53,6 +57,11 @@ public class UserService {
 
         existingUser.setEmail(user.getEmail());
         existingUser.setName(user.getName());
+        existingUser.setGender(user.getGender());
+        existingUser.setBirthday(user.getBirthday());
+        existingUser.setAddress(user.getAddress());
+        existingUser.setMobile(user.getMobile());
+        existingUser.setAbout(user.getAbout());
 
         if (user.getRole() != null) {
             existingUser.setRole(user.getRole());
@@ -87,28 +96,30 @@ public class UserService {
         resUser.setId(user.getId());
         resUser.setName(user.getName());
         resUser.setEmail(user.getEmail());
+        resUser.setGender(user.getGender());
+        resUser.setBirthday(user.getBirthday());
+        resUser.setAddress(user.getAddress());
+        resUser.setMobile(user.getMobile());
+        resUser.setAbout(user.getAbout());
         resUser.setRole(user.getRole());
         return resUser ;
     }
 
-    public ResPageResultDTO fetchAllUsers( int currentPage , int pageSize , Pageable pageable) {
-        Page<User> pageUser = this.userRepository.findAll(pageable) ;
+    public ResPageResultDTO fetchAllUsers(int currentPage, int pageSize, Pageable pageable) {
+        Page<User> pageUser = this.userRepository.findAllByRoleName("ROLE_USER", pageable); 
 
-        ResPageResultDTO res = new ResPageResultDTO() ;
-
-        Meta meta = new Meta() ;
+        ResPageResultDTO res = new ResPageResultDTO();
+        Meta meta = new Meta();
         meta.setCurrentPage(currentPage);
         meta.setPageSize(pageSize);
-        meta.setTotalElements( pageUser.getTotalElements());
-        meta.setTotalPages( pageUser.getTotalPages());
+        meta.setTotalElements(pageUser.getTotalElements());
+        meta.setTotalPages(pageUser.getTotalPages());
 
         res.setMeta(meta);
-
-        List<ResUser> listResUsers = pageUser.getContent()
-                    .stream()
-                    .map(item -> this.convertUserToResUser(item))
-                    .collect(Collectors.toList());
-        res.setResult(listResUsers);
+        res.setResult(pageUser.getContent()
+                .stream()
+                .map(this::convertUserToResUser)
+                .collect(Collectors.toList()));
 
         return res;
     }
