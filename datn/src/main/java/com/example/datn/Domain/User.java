@@ -51,7 +51,7 @@ public class User {
     private String password ;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", columnDefinition = "VARCHAR(10)")
     private Gender gender ;
 
     private Date birthday;

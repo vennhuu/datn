@@ -1,9 +1,10 @@
 import { Button, Drawer, notification } from "antd";
 import { useState } from "react";
+import { DEGREE_LABEL, SPECIALIZATION_LABEL } from "../../../constant/doctor.constant";
 
-const ViewUserDetail = (props) => {
+const ViewDoctorDetail = (props) => {
 
-    const {showDrawer , setShowDrawer , dataDetail , setDataDetail , loadUser} = props ;
+    const {showDrawer , setShowDrawer , dataDetail , setDataDetail , loadDoctor} = props ;
 
     const [selectedFile, setSelectedFile] = useState(null)
     const [preview , setPreview] = useState(null)
@@ -105,6 +106,8 @@ const ViewUserDetail = (props) => {
 
                 {/* Info card - overlap the banner */}
                 <div style={{ margin: "0 16px", marginTop: -20, borderRadius: 12, background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", padding: "20px 20px 8px" }}>
+
+                    {/* USER INFO */}
                     {[
                         { icon: "🪪", label: "ID", value: `#${dataDetail.id}` },
                         { icon: "📱", label: "Số điện thoại", value: dataDetail.mobile || "—" },
@@ -114,17 +117,61 @@ const ViewUserDetail = (props) => {
                         { icon: "💬", label: "Về tôi", value: dataDetail.about || "—" },
                     ].map((item, i) => (
                         <div key={i} style={{
-                            display: "flex", alignItems: "flex-start", gap: 12,
+                            display: "flex", gap: 12,
                             padding: "10px 0",
-                            borderBottom: i < 5 ? "1px solid #f0f0f0" : "none"
+                            borderBottom: "1px solid #f0f0f0"
                         }}>
-                            <span style={{ fontSize: 16, marginTop: 1 }}>{item.icon}</span>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 11, color: "#999", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.5px" }}>{item.label}</div>
-                                <div style={{ fontSize: 14, color: "#222", fontWeight: 500 }}>{item.value}</div>
+                            <span>{item.icon}</span>
+                            <div>
+                                <div style={{ fontSize: 11, color: "#999" }}>{item.label}</div>
+                                <div style={{ fontSize: 14, fontWeight: 500 }}>{item.value}</div>
                             </div>
                         </div>
                     ))}
+
+                    {/* DOCTOR INFO */}
+                    {[
+                        {
+                            icon: "🩺",
+                            label: "Chuyên khoa",
+                            value: SPECIALIZATION_LABEL[dataDetail.specialization] || "—"
+                        },
+                        {
+                            icon: "🎓",
+                            label: "Học vị",
+                            value: DEGREE_LABEL[dataDetail.degree] || "—"
+                        },
+                        {
+                            icon: "🏥",
+                            label: "Bệnh viện",
+                            value: dataDetail.hospital || "—"
+                        },
+                        {
+                            icon: "⏳",
+                            label: "Kinh nghiệm",
+                            value: dataDetail.experienceYears
+                                ? `${dataDetail.experienceYears} năm`
+                                : "—"
+                        },
+                        {
+                            icon: "📖",
+                            label: "Giới thiệu",
+                            value: dataDetail.bio || "—"
+                        }
+                    ].map((item, i) => (
+                        <div key={`doc-${i}`} style={{
+                            display: "flex", gap: 12,
+                            padding: "10px 0",
+                            borderBottom: i < 4 ? "1px solid #f0f0f0" : "none"
+                        }}>
+                            <span>{item.icon}</span>
+                            <div>
+                                <div style={{ fontSize: 11, color: "#999" }}>{item.label}</div>
+                                <div style={{ fontSize: 14, fontWeight: 500 }}>{item.value}</div>
+                            </div>
+                        </div>
+                    ))}
+
                 </div>
 
                 {/* Upload avatar */}
@@ -159,4 +206,4 @@ const ViewUserDetail = (props) => {
 );
 }
 
-export default ViewUserDetail;
+export default ViewDoctorDetail;

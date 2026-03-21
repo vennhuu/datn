@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.datn.Domain.User;
-import com.example.datn.Domain.response.ResPageResultDTO;
 import com.example.datn.Domain.response.ResUser;
+import com.example.datn.Domain.response.pagination.ResPageResultDTO;
 import com.example.datn.Service.UserService;
 import com.example.datn.Utils.annotation.APIMessage;
 import com.example.datn.Utils.errors.InvalidException;
@@ -47,10 +47,8 @@ public class UserController {
         if (this.userService.existEmail(user.getEmail())) {
             throw new InvalidException("Email đã tồn tại, hãy nhập email khác");
         }
-        String hashPassword = this.passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashPassword);
-        user.setRole(this.userService.setRole(user));
-        User savedUser = this.userService.save(user);
+
+        User savedUser = this.userService.createUser(user);
         ResUser res = this.userService.convertUserToResUser(savedUser);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
@@ -76,7 +74,7 @@ public class UserController {
 
     @PutMapping("/users")
     @APIMessage("Update a user")
-    public ResponseEntity<ResUser> updateUser( @RequestBody User user) throws InvalidException {
+    public ResponseEntity<ResUser> updateUser( @Valid @RequestBody User user) throws InvalidException {
 
         if ( !this.userService.existId(user.getId()) ) {
             throw new InvalidException("Không tìm thấy người dùng này") ;
@@ -106,5 +104,6 @@ public class UserController {
         ResUser res = this.userService.convertUserToResUser(user);   
         return ResponseEntity.ok(res);
     }
+
 
 }

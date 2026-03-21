@@ -11,11 +11,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.datn.Domain.Doctor;
 import com.example.datn.Domain.Role;
 import com.example.datn.Domain.User;
-import com.example.datn.Domain.response.Meta;
-import com.example.datn.Domain.response.ResPageResultDTO;
 import com.example.datn.Domain.response.ResUser;
+import com.example.datn.Domain.response.pagination.Meta;
+import com.example.datn.Domain.response.pagination.ResPageResultDTO;
+import com.example.datn.Repository.DoctorRepository;
 import com.example.datn.Repository.RoleRepository;
 import com.example.datn.Repository.UserRepository;
 
@@ -25,11 +27,17 @@ public class UserService {
     private final UserRepository userRepository ;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository ;
+    private final DoctorRepository doctorRepository;
 
-    public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder , RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder ;
-        this.roleRepository = roleRepository ;
+    public UserService(
+        UserRepository userRepository , 
+        PasswordEncoder passwordEncoder , 
+        RoleRepository roleRepository , 
+        DoctorRepository doctorRepository) {
+            this.userRepository = userRepository;
+            this.passwordEncoder = passwordEncoder ;
+            this.roleRepository = roleRepository ;
+            this.doctorRepository = doctorRepository ;
     }
 
     public User save(User user) {
@@ -87,8 +95,9 @@ public class UserService {
         return null ;
     }
 
-    public Role setRole( User user ) {
-        return this.roleRepository.findById((long) 3).orElseThrow();
+    public Role setRole(String roleName) {
+    return roleRepository.findByName(roleName)
+        .orElseThrow(() -> new RuntimeException("Role không tồn tại"));
     }
 
     public ResUser convertUserToResUser( User user ) {
@@ -123,4 +132,24 @@ public class UserService {
 
         return res;
     }
+
+    public User createUser(User user) {
+        Role role = setRole(user.getRole().getName());
+        user.setRole(role);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        User savedUser = userRepository.save(user);
+
+        if (role.getName().equals("ROLE_DOCTOR")) {
+            Doctor doctor = new Doctor();
+            doctor.setUser(savedUser);
+            doctor.setSpecialization(doctor.getSpecialization());
+
+            doctorRepository.save(doctor);
+        }
+
+        return savedUser;
+    }
+
 }

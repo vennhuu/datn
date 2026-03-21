@@ -1,4 +1,4 @@
-package com.example.datn.Domain.response;
+package com.example.datn.Domain.response.pagination;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

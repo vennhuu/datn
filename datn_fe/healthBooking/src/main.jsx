@@ -6,6 +6,7 @@ import './styles/global.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminLayout from './components/admin/layout/layout.admin.jsx'
 import User from './pages/admin/user.jsx'
+import Doctor from './pages/admin/doctor.jsx'
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/users",
         element: <User />
+      },
+      {
+        path: "/admin/doctors",
+        element: <Doctor />
       }
     ]
   }

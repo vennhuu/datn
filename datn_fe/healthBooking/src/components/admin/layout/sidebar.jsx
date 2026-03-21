@@ -18,7 +18,7 @@ const SideBar = () => {
         {
             key: 'doctors',
             icon: <UserOutlined />,
-            label: <Link to="#">Quản lý bác sĩ</Link>,
+            label: <Link to="/admin/doctors">Quản lý bác sĩ</Link>,
         },
     ];
 

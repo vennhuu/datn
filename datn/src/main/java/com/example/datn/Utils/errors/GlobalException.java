@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.datn.Domain.response.RestResponse;
 
-import jakarta.validation.ValidationException;
-
 @RestControllerAdvice
 public class GlobalException {
 
