@@ -1,7 +1,31 @@
-import { Button, Menu } from "antd";
+import { Button, Menu, Dropdown, Avatar } from "antd";
 import { Link } from "react-router-dom";
+import { UserOutlined } from "@ant-design/icons";
 
 const HeaderHomepage = () => {
+
+    const userMenu = (
+        <Menu
+            items={[
+                {
+                    key: "profile",
+                    label: <Link to="/profile">Hồ sơ cá nhân</Link>,
+                },
+                {
+                    key: "history",
+                    label: <Link to="/appointmenthistory">Lịch sử đặt khám</Link>,
+                },
+                {
+                    type: "divider",
+                },
+                {
+                    key: "logout",
+                    label: "Đăng xuất",
+                },
+            ]}
+        />
+    );
+
     const menuItems = [
         {
             label: <Link to="/">Trang chủ</Link>,
@@ -18,12 +42,13 @@ const HeaderHomepage = () => {
         {
             key: 'hospital',
             label: <Link to="/hospital">Bệnh viện</Link>,
-        }
+        },
     ];
+
     return (
         <>
             <h2 style={{ color: "#1890ff", margin: 0 }}>
-            🏥 PhuocBooking
+                <Link to="/">🏥 PhuocBooking</Link>
             </h2>
 
             <Menu
@@ -32,8 +57,35 @@ const HeaderHomepage = () => {
                 style={{ flex: 1, marginLeft: 40 }}
             />
 
-            <Button type="primary">Đăng nhập</Button>
+            {/* USER DROPDOWN */}
+            <Dropdown
+                menu={{
+                    items: [
+                        {
+                            key: "profile",
+                            label: <Link to="/profile">Hồ sơ cá nhân</Link>,
+                        },
+                        {
+                            key: "history",
+                            label: <Link to="/appointmenthistory">Lịch sử đặt khám</Link>,
+                        },
+                        {
+                            type: "divider",
+                        },
+                        {
+                            key: "logout",
+                            label: <Link to="/login">Đăng xuất</Link>,
+                        },
+                    ],
+                }}
+            >
+                <Avatar
+                    style={{ cursor: "pointer" }}
+                    icon={<UserOutlined />}
+                />
+            </Dropdown>
         </>
-    )
-}
-export default HeaderHomepage ;
+    );
+};
+
+export default HeaderHomepage;

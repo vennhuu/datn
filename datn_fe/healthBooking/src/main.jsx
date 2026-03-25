@@ -14,6 +14,12 @@ import DoctorList from './pages/patient/list.doctors.jsx'
 import Specialization from './pages/patient/specialization.jsx'
 import Hospital from './pages/patient/hospital.jsx'
 import DoctorDetail from './pages/patient/view.doctor.detail.jsx'
+import Login from './pages/auth/login.jsx'
+import Register from './pages/auth/register.jsx'
+import Profile from './pages/patient/profile.jsx'
+import BookAppointment from './pages/patient/book.appointment.jsx'
+import AppointmentHistory from './pages/patient/appointment.history.jsx'
+import ForgotPassword from './pages/auth/forget.password.jsx'
 
 const router = createBrowserRouter([
   {
@@ -58,8 +64,28 @@ const router = createBrowserRouter([
         path: "/view",
         element: <DoctorDetail />
       },
+      {
+        path: "/profile",
+        element: <Profile />
+      },
+      {
+        path: "/appointmenthistory",
+        element: <AppointmentHistory />
+      },
     ]
-  }
+  },
+  {
+    path: "/login",
+    element: <Login />
+  },
+  {
+    path: "/register",
+    element: <Register />
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />
+  },
 ]);
 createRoot(document.getElementById('root')).render(
 
