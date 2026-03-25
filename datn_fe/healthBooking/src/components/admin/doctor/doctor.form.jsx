@@ -1,6 +1,8 @@
-import { Button, DatePicker, Form, Input, Modal, notification, Select } from "antd";
+import { Button, DatePicker, Form, Input, Modal, notification, Select, Upload } from "antd";
 import { useState } from "react";
 import { createNewDoctorAPI } from "../../../services/api.service.doctor";
+import { updateUserAvatarAPI } from "../../../services/api.service.user";
+import { PlusOutlined } from "@ant-design/icons";
 
 const DoctorForm = (props) => {
     const {loadDoctor} = props;
@@ -21,27 +23,55 @@ const DoctorForm = (props) => {
     const [experienceYears , setExperienceYears] = useState("") ;
     const [bio , setBio] = useState("") ;
 
-    const handleOk = async() => {
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [preview , setPreview] = useState(null)
+
+    const handleOk = async () => {
+        let avatar = "";
+
+        // 1. upload ảnh trước
+        if (selectedFile) {
+            const uploadRes = await updateUserAvatarAPI(selectedFile, "avt_doctor");
+
+            if (uploadRes.data) {
+                avatar = uploadRes.data.fileName;
+            } else {
+                notification.error({
+                    message: "Upload avatar thất bại"
+                });
+                return;
+            }
+        }
+
         const birthdayStr = birthday ? birthday.format("YYYY-MM-DD") : "";
-        const res = await createNewDoctorAPI(name , email, password, gender , birthdayStr , address , mobile , about ,
-        specialization , degree , hospital , experienceYears , bio) ;
-        if ( res.data ) {
+
+        // 2. tạo doctor
+        const res = await createNewDoctorAPI(
+            name, email, password, gender, birthdayStr,
+            address, mobile, about,
+            specialization, degree, hospital, experienceYears, bio,
+            avatar
+        );
+
+        if (res.data) {
             notification.success({
-                title: "Tạo mới bác sĩ",
-                description: "Tạo bác sĩ mới thành công"
-            })
-            resetAndCloseModal()
-            await loadDoctor() ;
+                title: "Tạo bác sĩ" ,
+                description: "Tạo bác sĩ thành công"
+
+            });
+            resetAndCloseModal();
+            await loadDoctor();
         }
         else {
             notification.error({
-                title : "Tạo mới bác sĩ thất bại" ,
+                title: "Tạo bác sĩ thất bại" , 
                 description: JSON.stringify(res.message)
             })
         }
-    }
+    };
+
     const handleCancel = () => {
-        setIsModalOpen(false);
+        resetAndCloseModal() ;
     }
 
     const resetAndCloseModal = () => {
@@ -193,7 +223,25 @@ const DoctorForm = (props) => {
                         <span>Giới thiệu ngắn gọn</span>
                         <Input value={bio} onChange={(e) => setBio(e.target.value)} />
                     </div>
-
+                    
+                    <div>
+                        <span>Ảnh đại diện</span>
+                        <Upload listType="picture-card"
+                            beforeUpload={(file) => {
+                                setSelectedFile(file); // lưu file vào state
+                                setPreview(URL.createObjectURL(file)); // preview ảnh
+                                return false;
+                            }}
+                            maxCount={1}>
+                            <button
+                                style={{ color: 'inherit', cursor: 'inherit', border: 0, background: 'none' }}
+                                type="button"
+                                >
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Tải ảnh</div>
+                            </button>
+                        </Upload>
+                    </div>
                 </div>
             </Modal>
         </>

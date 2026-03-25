@@ -1,5 +1,6 @@
 package com.example.datn.Service;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -8,13 +9,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.datn.Domain.Doctor;
+import com.example.datn.Domain.Hospital;
 import com.example.datn.Domain.Role;
 import com.example.datn.Domain.User;
 import com.example.datn.Domain.request.ReqCreateDoctor;
+import com.example.datn.Domain.request.ReqUpdateDoctor;
 import com.example.datn.Domain.response.doctor.ResDoctor;
 import com.example.datn.Domain.response.pagination.Meta;
 import com.example.datn.Domain.response.pagination.ResPageResultDTO;
 import com.example.datn.Repository.DoctorRepository;
+import com.example.datn.Repository.HospitalRepository;
 import com.example.datn.Repository.RoleRepository;
 import com.example.datn.Repository.UserRepository;
 
@@ -25,17 +29,20 @@ public class DoctorService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final HospitalRepository hospitalRepository ;
 
     public DoctorService(
         DoctorRepository doctorRepository,
         UserRepository userRepository,
         RoleRepository roleRepository,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        HospitalRepository hospitalRepository
     ) {
         this.doctorRepository = doctorRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.hospitalRepository = hospitalRepository ;
     }
 
     // tạo bác sĩ
@@ -50,6 +57,7 @@ public class DoctorService {
         user.setAddress(req.getAddress());
         user.setMobile(req.getMobile());
         user.setAbout(req.getAbout());
+        user.setAvatar(req.getAvatar());
 
         user.setPassword(passwordEncoder.encode(req.getPassword()));
 
@@ -64,9 +72,12 @@ public class DoctorService {
         doctor.setUser(savedUser);
         doctor.setSpecialization(req.getSpecialization());
         doctor.setDegree(req.getDegree());
-        doctor.setHospital(req.getHospital());
+        Hospital hospital = hospitalRepository.findById(req.getHospital().getId())
+            .orElseThrow(() -> new RuntimeException("Hospital not found"));
+
+        doctor.setHospital(hospital);
         doctor.setExperienceYears(req.getExperienceYears());
-        doctor.setBio(req.getAbout());
+        doctor.setBio(req.getBio());
 
         Doctor savedDoctor = doctorRepository.save(doctor);
 
@@ -106,7 +117,7 @@ public class DoctorService {
     }
 
     // cập nhật bác sĩ
-    public ResDoctor updateDoctor(Long id, ReqCreateDoctor req) {
+    public ResDoctor updateDoctor(Long id, ReqUpdateDoctor req) {
 
         Doctor doctor = doctorRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Doctor not found"));
@@ -161,6 +172,7 @@ public class DoctorService {
         res.setAddress(user.getAddress());
         res.setMobile(user.getMobile());
         res.setAbout(user.getAbout());
+        res.setAvatar(user.getAvatar());
 
         res.setSpecialization(doctor.getSpecialization());
         res.setDegree(doctor.getDegree());
@@ -175,7 +187,15 @@ public class DoctorService {
         return this.doctorRepository.existsById(id);
     }
 
-    // public boolean existsByEmail (String email) {
-    //     return this.doctorRepository.existsByEmail(email ) ;
-    // }
+    public boolean existsByEmail (String email) {
+        return this.userRepository.existsByEmail(email ) ;
+    }
+
+    public User findById( long id ) {
+        Optional<User> optionalUser = this.userRepository.findById(id) ;
+        if ( optionalUser.isPresent() ) {
+            return optionalUser.get() ;
+        }
+        return null ;
+    }
 }

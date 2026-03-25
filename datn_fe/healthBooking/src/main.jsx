@@ -7,6 +7,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminLayout from './components/admin/layout/layout.admin.jsx'
 import User from './pages/admin/user.jsx'
 import Doctor from './pages/admin/doctor.jsx'
+import LayoutPatient from './components/patient/layout/layout.patient.jsx'
+import Dashboard from './pages/admin/dashboard.jsx'
+import Homepage from './pages/patient/homepage.jsx'
+import DoctorList from './pages/patient/list.doctors.jsx'
+import Specialization from './pages/patient/specialization.jsx'
+import Hospital from './pages/patient/hospital.jsx'
+import DoctorDetail from './pages/patient/view.doctor.detail.jsx'
 
 const router = createBrowserRouter([
   {
@@ -15,7 +22,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <div>Dashboard Admin</div>
+        element: <Dashboard/>
       },
       {
         path: "/admin/users",
@@ -25,6 +32,32 @@ const router = createBrowserRouter([
         path: "/admin/doctors",
         element: <Doctor />
       }
+    ]
+  },
+  {
+    path: "/",
+    element: <LayoutPatient />,
+    children: [
+      {
+        index: true,
+        element: <Homepage/>
+      },
+      {
+        path: "/doctors",
+        element: <DoctorList />
+      },
+      {
+        path: "/specialization",
+        element: <Specialization />
+      },
+      {
+        path: "/hospital",
+        element: <Hospital />
+      },
+      {
+        path: "/view",
+        element: <DoctorDetail />
+      },
     ]
   }
 ]);

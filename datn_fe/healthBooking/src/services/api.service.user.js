@@ -1,16 +1,17 @@
 import axios from "./axios.customize";
 
-const createUserAPI = (name , email, password, gender , birthday , address , mobile , about) => {
+const createUserAPI = (name , email, password, gender , birthday , address , mobile , about , avatar) => {
     const URL_BACKEND = "/api/v1/users"
     const data = {
         name: name ,
         email: email ,
         password: password,
-        gender: gender,
+        gender: gender || null,
         birthday: birthday ,
         address: address ,
         mobile : mobile ,
-        about: about
+        about: about , 
+        avatar: avatar
     }
     return axios.post(URL_BACKEND,data);
 }
@@ -41,4 +42,29 @@ const deleteUserAPI = (id) => {
     return axios.delete(URL_BACKEND);
 }
 
-export {createUserAPI , updateUserAPI , fetchAllUserAPI , deleteUserAPI}
+const updateUserAvatarAPI = (file , folder) => {
+    const URL_BACKEND = "/api/v1/files"
+
+    const bodyFormData = new FormData()
+
+    bodyFormData.append("file", file)
+    bodyFormData.append("folder", folder)
+
+    return axios.post(URL_BACKEND, bodyFormData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    })
+}
+
+const updateUploadUserAvatarAPI = (id, avatar) => {
+    const URL_BACKEND = "/api/v1/users/avatar"
+
+    const params = new URLSearchParams()
+
+    params.append("userId", id)
+    params.append("avatar", avatar)
+
+    return axios.put(URL_BACKEND, params)
+}
+export {createUserAPI , updateUserAPI , fetchAllUserAPI , deleteUserAPI , updateUserAvatarAPI , updateUploadUserAvatarAPI}

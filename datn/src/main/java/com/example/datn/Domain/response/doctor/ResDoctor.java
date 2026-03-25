@@ -2,6 +2,7 @@ package com.example.datn.Domain.response.doctor;
 
 import java.util.Date;
 
+import com.example.datn.Domain.Hospital;
 import com.example.datn.Domain.Role;
 import com.example.datn.Utils.enums.Degree;
 import com.example.datn.Utils.enums.Gender;
@@ -22,10 +23,11 @@ public class ResDoctor {
 	private String mobile;
 	private String about;
     private Role role ;
+    private String avatar ;
 
     private Specialization specialization;
     private Degree degree;
-    private String hospital;
+    private Hospital hospital;
     private String experienceYears;
     private String bio;
 }

@@ -2,6 +2,7 @@ package com.example.datn.Domain;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,8 +20,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -29,52 +34,62 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
-@Table(name ="users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id ;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @NotBlank(message ="Không được để trống tên")
-    private String name ;
+    @NotBlank(message = "Không được để trống tên")
+    private String name;
 
-    @NotBlank(message ="Không được để trống email")
-    private String email ;
+    @NotBlank(message = "Không được để trống email")
+    @Email(message = "Email phải đúng định dạng")
+    @Column(unique = true)
+    private String email;
 
-    @NotBlank(message ="Không được để trống mật khẩu")
-    private String password ;
+    @NotBlank(message = "Không được để trống mật khẩu")
+    private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender", columnDefinition = "VARCHAR(10)")
-    private Gender gender ;
+    @NotNull(message = "Vui lòng nhập giới tính")
+    private Gender gender;
 
     private Date birthday;
 
     @Size(max = 100)
-	private String address;
+    private String address;
 
-	@Pattern(regexp = "^[0-9]+$", message = "Số điện thoại chỉ được chứa số")
+    @Pattern(regexp = "^[0-9]+$", message = "Số điện thoại chỉ được chứa số")
     @Size(max = 20)
-	private String mobile;
+    private String mobile;
 
-	@Column(columnDefinition = "TEXT")
-	private String about;
+    @Column(columnDefinition = "TEXT")
+    private String about;
 
     @ManyToOne
-    @JoinColumn(name="role_id", nullable=false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false) 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(columnDefinition = "TEXT")
+    private String avatar;
+
+    @OneToOne(mappedBy = "user")
+    private Doctor doctor;
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
 }

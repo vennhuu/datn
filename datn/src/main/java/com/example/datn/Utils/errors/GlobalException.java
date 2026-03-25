@@ -55,14 +55,14 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
-    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
-    public ResponseEntity<RestResponse<Object>> handleEnumException(Exception ex) {
+    // @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    // public ResponseEntity<RestResponse<Object>> handleEnumException(Exception ex) {
 
-        RestResponse<Object> res = new RestResponse<>();
-        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError("Bad Request");
-        res.setMessage("Giá trị gender không hợp lệ (NAM, NU, KHAC)");
+    //     RestResponse<Object> res = new RestResponse<>();
+    //     res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+    //     res.setError("Bad Request");
+    //     res.setMessage("Giá trị gender không hợp lệ (Nam, Nữ, Khác)");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
-    }
+    //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    // }
 }

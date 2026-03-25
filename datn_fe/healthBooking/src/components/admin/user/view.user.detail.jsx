@@ -1,5 +1,6 @@
 import { Button, Drawer, notification } from "antd";
 import { useState } from "react";
+import { updateUploadUserAvatarAPI, updateUserAvatarAPI } from "../../../services/api.service.user";
 
 const ViewUserDetail = (props) => {
 
@@ -8,50 +9,37 @@ const ViewUserDetail = (props) => {
     const [selectedFile, setSelectedFile] = useState(null)
     const [preview , setPreview] = useState(null)
 
-    // const handleOnchangeFile = (event) => {
-    //     if ( !event.target.files || event.target.files.length === 0) {
-    //         setSelectedFile(null)
-    //         setPreview(null)
-    //         return;
-    //     }
-    //     const file = event.target.files[0];
-    //     if(file) {
-    //         setSelectedFile(file)
-    //         setPreview(URL.createObjectURL(file))
-    //     }
-    // }
-    
-    // const handleUpdateUserAvatar = async () => {
+    const handleUpdateUserAvatar = async () => {
 
-    //     const resUpload = await uploadAvatarAPI(selectedFile,"avatar")
+        const resUpload = await updateUserAvatarAPI(selectedFile,"avt_patient")
 
-    //     if(resUpload.data){
+        if(resUpload.data){
 
-    //         const newAvatar = resUpload.data.fileName
+            const newAvatar = resUpload.data.fileName
 
-    //         const resUpdateAvatar = await updateUserAvatarAPI(
-    //             dataDetail.id,
-    //             newAvatar
-    //         )
+            const resUpdateAvatar = await updateUploadUserAvatarAPI(
+                dataDetail.id,
+                newAvatar
+            )
 
-    //         if(resUpdateAvatar.data){
-    //             notification.success({
-    //                 message:"Cập nhật avatar",
-    //                 description:"Thành công"
-    //             })
+            if(resUpdateAvatar.data){
+                notification.success({
+                    message:"Cập nhật avatar",
+                    description:"Thành công"
+                })
 
-    //             setPreview(null)
-    //             setSelectedFile(null)
+                setPreview(null)
+                setSelectedFile(null)
 
-    //             // reload danh sách user
-    //             await loadUser()
+                // reload danh sách user
+                await loadUser()
 
-    //             // đóng drawer
-    //             setShowDrawer(false)
-    //             setDataDetail(null)
-    //         }
-    //     }
-    // }
+                // đóng drawer
+                setShowDrawer(false)
+                setDataDetail(null)
+            }
+        }
+    }
     return (
     <Drawer
         title={null}
@@ -91,7 +79,7 @@ const ViewUserDetail = (props) => {
                             boxShadow: "0 4px 16px rgba(0,0,0,0.2)", background: "#e6f4ff"
                         }}>
                             <img
-                                src={`${import.meta.env.VITE_BACKEND_URL}/storage/avatar/${dataDetail.avatar}`}
+                                src={`${import.meta.env.VITE_BACKEND_URL}/storage/avt_patient/${dataDetail.avatar}`}
                                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${dataDetail.name}&background=1677ff&color=fff&size=90` }}
                             />
@@ -138,14 +126,25 @@ const ViewUserDetail = (props) => {
                     }}>
                         📷 Cập nhật ảnh đại diện
                     </label>
-                    <input type="file" hidden id="btnUpload" />
+                    <input
+                            type="file"
+                            hidden
+                            id="btnUpload"
+                            onChange={(event) => {
+                                const file = event.target.files[0];
+                                if (file) {
+                                    setSelectedFile(file);
+                                    setPreview(URL.createObjectURL(file));
+                                }
+                            }}
+                        />
 
                     {preview && (
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
                             <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", border: "2px solid #1677ff" }}>
                                 <img src={preview} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                             </div>
-                            <Button type="primary" style={{ width: "100%", borderRadius: 8 }}>Lưu ảnh</Button>
+                            <Button type="primary" style={{ width: "100%", borderRadius: 8 }} onClick={handleUpdateUserAvatar}>Lưu ảnh</Button>
                         </div>
                     )}
                 </div>

@@ -74,7 +74,7 @@ public class UserController {
 
     @PutMapping("/users")
     @APIMessage("Update a user")
-    public ResponseEntity<ResUser> updateUser( @Valid @RequestBody User user) throws InvalidException {
+    public ResponseEntity<ResUser> updateUser( @Valid @RequestBody ResUser user) throws InvalidException {
 
         if ( !this.userService.existId(user.getId()) ) {
             throw new InvalidException("Không tìm thấy người dùng này") ;
@@ -101,9 +101,28 @@ public class UserController {
     @APIMessage("Get user by id")
     public ResponseEntity<ResUser> getUserById(@PathVariable Long id) {
         User user = this.userService.findById(id) ;
-        ResUser res = this.userService.convertUserToResUser(user);   
+        ResUser res = this.userService.convertUserToResUser(user);
         return ResponseEntity.ok(res);
     }
 
+    @PutMapping("/users/avatar")
+    @APIMessage("Update user avatar")
+    public ResponseEntity<String> updateAvatar(
+            @RequestParam Long userId,
+            @RequestParam String avatar
+    ) throws InvalidException {
+
+        User user = userService.findById(userId);
+
+        if (user == null) {
+            throw new InvalidException("User không tồn tại");
+        }
+
+        user.setAvatar(avatar);
+
+        userService.save(user);
+
+        return ResponseEntity.ok("Avatar updated");
+    }
 
 }

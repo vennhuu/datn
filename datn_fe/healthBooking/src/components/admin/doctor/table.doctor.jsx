@@ -1,9 +1,9 @@
 import { notification, Popconfirm, Space, Table, Tag } from "antd";
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useState } from "react";
-import { deleteUserAPI } from "../../../services/api.service.user";
 import UpdateDoctorModal from "./update.doctor.modal";
 import ViewDoctorDetail from "./view.doctor.detail";
+import { deleteDoctorAPI } from "../../../services/api.service.doctor";
 
 const TableDoctor = (props) => {
 
@@ -15,17 +15,17 @@ const TableDoctor = (props) => {
     const [dataDetail , setDataDetail] = useState(null)
 
     const handleDeleteDoctor = async(id) => {
-        const res = await deleteUserAPI(id) ;
+        const res = await deleteDoctorAPI(id) ;
         if ( res.data){
             notification.success({
-                message:"Xóa người dùng" ,
-                description: "Xóa người dùng thành công"
+                message:"Xóa bác sĩ" ,
+                description: "Xóa bác sĩ thành công"
             })
             await loadDoctor() ;
         }
         else {
             notification.error({
-                message:"Xóa người dùng thất bại" ,
+                message:"Xóa bác sĩ thất bại" ,
                 description: JSON.stringify(res.message)
             })
         }
@@ -68,10 +68,10 @@ const TableDoctor = (props) => {
                     style={{ cursor: "pointer", color: "orange"}}
                 />
                 <Popconfirm
-                    title="Xóa người dùng"
-                    description="Bạn có chắc muốn xóa người dùng này?"
+                    title="Xóa bác sĩ"
+                    description="Bạn có chắc muốn xóa bác sĩ này?"
                     onConfirm ={() =>
-                        handleDeleteUser(record.id)
+                        handleDeleteDoctor(record.id)
                     }
                     okText="Có"
                     cancelText="Không"

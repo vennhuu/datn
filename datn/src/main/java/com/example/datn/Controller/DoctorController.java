@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.datn.Domain.User;
 import com.example.datn.Domain.request.ReqCreateDoctor;
+import com.example.datn.Domain.request.ReqUpdateDoctor;
 import com.example.datn.Domain.response.doctor.ResDoctor;
 import com.example.datn.Domain.response.pagination.ResPageResultDTO;
 import com.example.datn.Service.DoctorService;
+import com.example.datn.Service.UserService;
 import com.example.datn.Utils.annotation.APIMessage;
 import com.example.datn.Utils.errors.InvalidException;
 
@@ -30,15 +33,20 @@ import jakarta.validation.Valid;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final UserService userService ;
 
-    public DoctorController(DoctorService doctorService) {
+    public DoctorController(DoctorService doctorService , UserService userService) {
         this.doctorService = doctorService;
+        this.userService = userService ;
     }
 
     // CREATE
     @PostMapping("/doctors")
     @APIMessage("Create a new doctor")
-    public ResponseEntity<ResDoctor> createDoctor(@RequestBody ReqCreateDoctor req) {
+    public ResponseEntity<ResDoctor> createDoctor(@Valid @RequestBody ReqCreateDoctor req) throws InvalidException {
+        if (this.doctorService.existsByEmail(req.getEmail())) {
+            throw new InvalidException("Email đã tồn tại, hãy nhập email khác");
+        }
         return ResponseEntity.ok(doctorService.createDoctor(req));
     }
 
@@ -72,8 +80,9 @@ public class DoctorController {
 
     // UPDATE
     @PutMapping("/doctors")
+    @APIMessage("Update doctors")
     public ResponseEntity<ResDoctor> updateDoctor(
-        @Valid @RequestBody ReqCreateDoctor req
+        @Valid @RequestBody ReqUpdateDoctor req
     ) throws InvalidException {
         if ( !this.doctorService.existById(req.getId())) {
             throw new InvalidException("Không tìm thấy người dùng này") ;
@@ -83,8 +92,29 @@ public class DoctorController {
 
     // DELETE
     @DeleteMapping("/doctors/{id}")
+    @APIMessage("Delete doctor by id")
     public ResponseEntity<String> deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctor(id);
         return ResponseEntity.ok("Deleted successfully");
+    }
+
+    @PutMapping("/doctors/avatar")
+    @APIMessage("Update user avatar")
+    public ResponseEntity<String> updateAvatar(
+            @RequestParam Long userId,
+            @RequestParam String avatar
+    ) throws InvalidException {
+
+        User user = userService.findById(userId);
+
+        if (user == null) {
+            throw new InvalidException("User không tồn tại");
+        }
+
+        user.setAvatar(avatar);
+
+        userService.save(user);
+
+        return ResponseEntity.ok("Avatar updated");
     }
 }

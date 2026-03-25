@@ -1,6 +1,7 @@
-import { Button, DatePicker, Form, Input, Modal, notification, Select } from "antd";
+import { Button, DatePicker, Form, Input, Modal, notification, Select, Upload } from "antd";
 import { useState } from "react";
-import { createUserAPI } from "../../../services/api.service.user";
+import { createUserAPI, updateUserAvatarAPI } from "../../../services/api.service.user";
+import { PlusOutlined } from "@ant-design/icons";
 
 const UserForm = (props) => {
     const {loadUser} = props;
@@ -15,9 +16,29 @@ const UserForm = (props) => {
     const [about , setAbout] = useState("") ;
     const [password , setPassword] = useState("") ;
 
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [preview , setPreview] = useState(null)
+
     const handleOk = async() => {
+
+        let avatar = "";
+
+        // 1. upload ảnh trước
+        if (selectedFile) {
+            const uploadRes = await updateUserAvatarAPI(selectedFile, "avt_patient");
+
+            if (uploadRes.data) {
+                avatar = uploadRes.data.fileName;
+            } else {
+                notification.error({
+                    message: "Upload avatar thất bại"
+                });
+                return;
+            }
+        }
+
         const birthdayStr = birthday ? birthday.format("YYYY-MM-DD") : "";
-        const res = await createUserAPI(name , email, password, gender , birthdayStr , address , mobile , about) ;
+        const res = await createUserAPI(name , email, password, gender , birthdayStr , address , mobile , about , avatar) ;
         if ( res.data ) {
             notification.success({
                 title: "Tạo mới bệnh nhân",
@@ -125,6 +146,24 @@ const UserForm = (props) => {
                         <Input value={about} onChange={(e) => setAbout(e.target.value)} />
                     </div>
 
+                    <div>
+                        <span>Ảnh đại diện</span>
+                        <Upload listType="picture-card"
+                            beforeUpload={(file) => {
+                                setSelectedFile(file); // lưu file vào state
+                                setPreview(URL.createObjectURL(file)); // preview ảnh
+                                return false;
+                            }}
+                            maxCount={1}>
+                            <button
+                                style={{ color: 'inherit', cursor: 'inherit', border: 0, background: 'none' }}
+                                type="button"
+                                >
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Tải ảnh</div>
+                            </button>
+                        </Upload>
+                    </div>
                 </div>
             </Modal>
         </>

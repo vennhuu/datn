@@ -7,22 +7,23 @@ const fetchAllDoctorAPI = (current = 1, pageSize = 5) => {
 }
 
 const createNewDoctorAPI = (name , email, password, gender , birthday , address , mobile , about ,
-        specialization , degree , hospital , experienceYears , bio) => {
+        specialization , degree , hospital , experienceYears , bio , avatar) => {
     const URL_BACKEND = "/api/v1/doctors"
     const data = {
         name: name ,
         email: email ,
         password: password,
-        gender: gender,
+        gender: gender || null,
         birthday: birthday ,
         address: address ,
         mobile : mobile ,
         about: about , 
-        specialization: specialization ,
-        degree: degree ,
+        specialization: specialization || null ,
+        degree: degree || null,
         hospital:hospital ,
-        experienceYears :experienceYears ,
-        bio: bio
+        experienceYears :experienceYears  ,
+        bio: bio , 
+        avatar: avatar
     }
     return axios.post(URL_BACKEND,data);
 }
@@ -47,4 +48,20 @@ const updateDoctorAPI = (id ,name , email, gender , birthday , address , mobile 
     }
     return axios.put(URL_BACKEND,data);
 }
-export { fetchAllDoctorAPI , createNewDoctorAPI , updateDoctorAPI} ;
+
+const deleteDoctorAPI = (id) => {
+    const URL_BACKEND = `/api/v1/doctors/${id}`;
+    return axios.delete(URL_BACKEND);
+}
+
+const updateDoctorAvatarAPI = (id, avatar) => {
+    const URL_BACKEND = "/api/v1/doctors/avatar"
+
+    const params = new URLSearchParams()
+
+    params.append("userId", id)
+    params.append("avatar", avatar)
+
+    return axios.put(URL_BACKEND, params)
+}
+export { fetchAllDoctorAPI , createNewDoctorAPI , updateDoctorAPI , deleteDoctorAPI , updateDoctorAvatarAPI} ;

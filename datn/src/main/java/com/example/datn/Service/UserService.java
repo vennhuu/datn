@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.datn.Domain.Doctor;
 import com.example.datn.Domain.Role;
 import com.example.datn.Domain.User;
 import com.example.datn.Domain.response.ResUser;
@@ -59,7 +58,7 @@ public class UserService {
                 .collect(Collectors.toList()) ;
     }
 
-    public User updateUser(Long id, User user) {
+    public User updateUser(Long id, ResUser user) {
         User existingUser = this.userRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
@@ -74,11 +73,6 @@ public class UserService {
         if (user.getRole() != null) {
             existingUser.setRole(user.getRole());
         }
-
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            String hashPassword = this.passwordEncoder.encode(user.getPassword());
-            existingUser.setPassword(hashPassword);
-    }
 
         return this.userRepository.save(existingUser);
     }
@@ -111,6 +105,7 @@ public class UserService {
         resUser.setMobile(user.getMobile());
         resUser.setAbout(user.getAbout());
         resUser.setRole(user.getRole());
+        resUser.setAvatar(user.getAvatar());
         return resUser ;
     }
 
@@ -134,20 +129,12 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        Role role = setRole(user.getRole().getName());
+        Role role = setRole("ROLE_USER");
         user.setRole(role);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(user);
-
-        if (role.getName().equals("ROLE_DOCTOR")) {
-            Doctor doctor = new Doctor();
-            doctor.setUser(savedUser);
-            doctor.setSpecialization(doctor.getSpecialization());
-
-            doctorRepository.save(doctor);
-        }
 
         return savedUser;
     }
