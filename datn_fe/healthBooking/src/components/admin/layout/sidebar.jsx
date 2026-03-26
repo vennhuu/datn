@@ -1,4 +1,4 @@
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { HomeOutlined, MedicineBoxOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
 
@@ -19,6 +19,11 @@ const SideBar = () => {
             key: 'doctors',
             icon: <UserOutlined />,
             label: <Link to="/admin/doctors">Quản lý bác sĩ</Link>,
+        },
+        {
+            key: 'hospitals',
+            icon: <MedicineBoxOutlined  />,
+            label: <Link to="/admin/hospitals">Quản lý bệnh viện</Link>,
         },
     ];
 

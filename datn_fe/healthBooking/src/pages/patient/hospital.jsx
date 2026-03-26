@@ -1,119 +1,35 @@
-import {
-  Row,
-  Col,
-  Card,
-  Input,
-  Select,
-  Rate,
-  Button,
-} from "antd";
+import { useEffect, useState } from "react";
+import HospitalFilter from "../../components/patient/hospital/hospital.filter";
+import ListHospital from "../../components/patient/hospital/list.hospital";
+import { fetchAllHospitalAPI } from "../../services/api.service.hospital";
 
 const Hospital = () => {
-  const hospitals = [
-    {
-      name: "Bệnh viện Bạch Mai",
-      address: "Hà Nội",
-      rating: 4.5,
-      image: "https://picsum.photos/300/200",
-    },
-    {
-      name: "Bệnh viện Chợ Rẫy",
-      address: "TP.HCM",
-      rating: 4,
-      image: "https://picsum.photos/300/201",
-    },
-    {
-      name: "Bệnh viện Việt Đức",
-      address: "Hà Nội",
-      rating: 4.2,
-      image: "https://picsum.photos/300/202",
-    },
-    {
-      name: "Bệnh viện Bạch Mai",
-      address: "Hà Nội",
-      rating: 4.5,
-      image: "https://picsum.photos/300/200",
-    },
-    {
-      name: "Bệnh viện Chợ Rẫy",
-      address: "TP.HCM",
-      rating: 4,
-      image: "https://picsum.photos/300/201",
-    },
-    {
-      name: "Bệnh viện Việt Đức",
-      address: "Hà Nội",
-      rating: 4.2,
-      image: "https://picsum.photos/300/202",
-    },
-    {
-      name: "Bệnh viện Bạch Mai",
-      address: "Hà Nội",
-      rating: 4.5,
-      image: "https://picsum.photos/300/200",
-    },
-    {
-      name: "Bệnh viện Chợ Rẫy",
-      address: "TP.HCM",
-      rating: 4,
-      image: "https://picsum.photos/300/201",
-    },
-    {
-      name: "Bệnh viện Việt Đức",
-      address: "Hà Nội",
-      rating: 4.2,
-      image: "https://picsum.photos/300/202",
-    },
-  ];
+
+  const [dataHospital , setDataHospital] = useState([]) ;
+  const [current , setCurrent] = useState(1) ;
+  const [pageSize , setPageSize] = useState(10) ;
+  const [total , setTotal] = useState(0) ;
+
+  useEffect(() => {
+    loadHospital();
+  }, [current, pageSize]);
+
+  const loadHospital = async() => {
+    const res = await fetchAllHospitalAPI(current , pageSize) ;
+    if ( res.data ) {
+      setDataHospital(res.data.result) ;
+      setCurrent(res.data.meta.currentPage) ;
+      setPageSize(res.data.meta.pageSize) ;
+      setTotal(res.data.meta.totalElements) ;
+    }
+  }
 
   return (
     <div style={{ padding: "40px 80px" }}>
-      <h2>Danh sách bệnh viện</h2>
-
-      {/* SEARCH + FILTER */}
-      <Row gutter={16} style={{ marginBottom: 20 }}>
-        <Col span={12}>
-          <Input.Search placeholder="Tìm bệnh viện..." />
-        </Col>
-
-        <Col span={6}>
-          <Select style={{ width: "100%" }} placeholder="Chọn địa điểm">
-            <Select.Option value="hn">Hà Nội</Select.Option>
-            <Select.Option value="hcm">TP.HCM</Select.Option>
-          </Select>
-        </Col>
-      </Row>
+      <HospitalFilter/>
 
       {/* LIST */}
-      <Row gutter={[16, 16]}>
-        {hospitals.map((item, index) => (
-          <Col xs={24} sm={12} md={8} key={index}>
-            <Card
-              hoverable
-              cover={
-                <img
-                  src={item.image}
-                  alt=""
-                  style={{ height: 180, objectFit: "cover" }}
-                />
-              }
-              style={{ borderRadius: 12 }}
-            >
-              <h3>{item.name}</h3>
-
-              <p>📍 {item.address}</p>
-
-              <Rate disabled defaultValue={item.rating} />
-
-              <div style={{ marginTop: 10 }}>
-                <Button type="primary">
-                  Xem chi tiết
-                </Button>
-              </div>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      <ListHospital dataHospital={dataHospital}/>
     </div>
   );
 };

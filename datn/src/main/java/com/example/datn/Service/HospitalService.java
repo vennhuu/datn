@@ -42,13 +42,13 @@ public class HospitalService {
 
         Page<Hospital> pageHospital = this.hospitalRepository.findAll(pageable) ;
         Meta meta = new Meta() ;
-        meta.setCurrentPage(pageable.getPageNumber());
-        meta.setPageSize(pageable.getPageSize());
+        meta.setCurrentPage(currentPage);
+        meta.setPageSize(pageSize);
         meta.setTotalElements(pageHospital.getTotalElements());
         meta.setTotalPages(pageHospital.getTotalPages());
 
         res.setMeta(meta);
-        res.setResult(pageHospital);
+        res.setResult(pageHospital.getContent());
 
         return res ;
     }
@@ -80,6 +80,14 @@ public class HospitalService {
 
     public void deleteHospital(Long id) {
         this.hospitalRepository.deleteById(id);
+    }
+
+   public Hospital findById( long id ) {
+        Optional<Hospital> optionalHospital = this.hospitalRepository.findById(id) ;
+        if ( optionalHospital.isPresent() ) {
+            return optionalHospital.get() ;
+        }
+        return null ;
     }
     
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { updateUserAPI } from "../../../services/api.service.user";
 import { DatePicker, Input, Modal, notification, Select } from "antd";
 import dayjs from "dayjs";
 import { updateDoctorAPI } from "../../../services/api.service.doctor";

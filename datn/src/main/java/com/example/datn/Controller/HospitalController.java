@@ -91,4 +91,24 @@ public class HospitalController {
         hospitalService.deleteHospital(id);
         return ResponseEntity.ok("Deleted successfully");
     }
+
+    @PutMapping("/hospitals/logo")
+    @APIMessage("Update hospital logo")
+    public ResponseEntity<String> updateLogo(
+            @RequestParam Long hospitalId,
+            @RequestParam String logo
+    ) throws InvalidException {
+
+        Hospital hospital = hospitalService.findById(hospitalId);
+
+        if (hospital == null) {
+            throw new InvalidException("Bệnh viện không tồn tại");
+        }
+
+        hospital.setLogo(logo);
+
+        hospitalService.save(hospital);
+
+        return ResponseEntity.ok("Avatar updated");
+    }
 }

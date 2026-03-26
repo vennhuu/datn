@@ -26,6 +26,7 @@ import Schedule from './pages/doctor/schedule.jsx'
 import ListPatient from './pages/doctor/patient.jsx'
 import Message from './pages/doctor/message.jsx'
 import ProfileDoctor from './pages/doctor/profile.jsx'
+import ListHospitalAdmin from './pages/admin/hospital.jsx'
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/doctors",
         element: <Doctor />
+      },
+      {
+        path: "/admin/hospitals",
+        element: <ListHospitalAdmin />
       }
     ]
   },
