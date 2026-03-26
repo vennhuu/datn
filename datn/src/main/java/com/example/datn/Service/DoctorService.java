@@ -65,11 +65,9 @@ public class DoctorService {
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         user.setRole(role);
 
-        User savedUser = userRepository.save(user);
-
         // tạo doctor
         Doctor doctor = new Doctor();
-        doctor.setUser(savedUser);
+        doctor.setUser(user);
         doctor.setSpecialization(req.getSpecialization());
         doctor.setDegree(req.getDegree());
         Hospital hospital = hospitalRepository.findById(req.getHospital().getId())
@@ -164,7 +162,7 @@ public class DoctorService {
         User user = doctor.getUser();
 
         ResDoctor res = new ResDoctor();
-        res.setId(user.getId());
+        res.setId(doctor.getId());
         res.setName(user.getName());
         res.setEmail(user.getEmail());
         res.setGender(user.getGender()) ;
@@ -176,7 +174,7 @@ public class DoctorService {
 
         res.setSpecialization(doctor.getSpecialization());
         res.setDegree(doctor.getDegree());
-        res.setHospital(doctor.getHospital());
+        res.setHospital(doctor.getHospital().getName());
         res.setExperienceYears(doctor.getExperienceYears());
         res.setBio(doctor.getBio());
 

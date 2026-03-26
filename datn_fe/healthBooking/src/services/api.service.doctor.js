@@ -20,7 +20,7 @@ const createNewDoctorAPI = (name , email, password, gender , birthday , address 
         about: about , 
         specialization: specialization || null ,
         degree: degree || null,
-        hospital:hospital ,
+        hospital: { id: hospital },
         experienceYears :experienceYears  ,
         bio: bio , 
         avatar: avatar
@@ -39,7 +39,7 @@ const updateDoctorAPI = (id ,name , email, gender , birthday , address , mobile 
         birthday: birthday ,
         address: address ,
         mobile : mobile ,
-        about: about , 
+        about: about ,
         specialization: specialization ,
         degree: degree ,
         hospital:hospital ,

@@ -44,6 +44,8 @@ public class ReqCreateDoctor {
 
     @NotNull(message="Bắt buộc phải có học vị")
     private Degree degree;
+
+    @NotNull(message="Bắt buộc phải có bệnh viện")
     private Hospital hospital;
 
     @Pattern(regexp = "^[0-9]+$", message = "Số năm kinh nghiệm phải là chữ số")

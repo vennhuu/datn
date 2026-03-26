@@ -4,28 +4,6 @@ import { UserOutlined } from "@ant-design/icons";
 
 const HeaderHomepage = () => {
 
-    const userMenu = (
-        <Menu
-            items={[
-                {
-                    key: "profile",
-                    label: <Link to="/profile">Hồ sơ cá nhân</Link>,
-                },
-                {
-                    key: "history",
-                    label: <Link to="/appointmenthistory">Lịch sử đặt khám</Link>,
-                },
-                {
-                    type: "divider",
-                },
-                {
-                    key: "logout",
-                    label: "Đăng xuất",
-                },
-            ]}
-        />
-    );
-
     const menuItems = [
         {
             label: <Link to="/">Trang chủ</Link>,

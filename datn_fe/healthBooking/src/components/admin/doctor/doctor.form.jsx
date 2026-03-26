@@ -211,7 +211,24 @@ const DoctorForm = (props) => {
                     </div>
                     <div>
                         <span>Bệnh viện</span>
-                        <Input value={hospital} onChange={(e) => setHospital(e.target.value)} />
+                        <Select
+                            style={{ width: "100%" }}
+                            value={hospital}
+                            onChange={(value) => setHospital(value)}
+                            placeholder="Chọn bệnh viện"
+                            options={[
+                                { label: 'Bệnh viện Bạch Mai', value: 1 },
+                                { label: 'Bệnh viện Hữu Nghị Việt Đức', value: 2 },
+                                { label: 'Bệnh viện Phụ Sản Hà Nội', value: 3 },
+                                { label: 'Bệnh viện Đa khoa Đà Nẵng', value: 4 },
+                                { label: 'Bệnh viện C Đà Nẵng', value: 5 },
+                                { label: 'Bệnh viện Hoàn Mỹ Đà Nẵng', value: 6 },
+                                { label: 'Bệnh viện Chợ Rẫy', value: 7 },
+                                { label: 'Bệnh viện Đại học Y Dược TP.HCM', value: 8 },
+                                { label: 'Bệnh viện Nhân dân 115', value: 9 },
+                                { label: 'Bệnh viện FV', value: 10 }
+                            ]}
+                        />
                     </div>
 
                     <div>

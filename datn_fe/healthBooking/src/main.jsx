@@ -20,6 +20,12 @@ import Profile from './pages/patient/profile.jsx'
 import BookAppointment from './pages/patient/book.appointment.jsx'
 import AppointmentHistory from './pages/patient/appointment.history.jsx'
 import ForgotPassword from './pages/auth/forget.password.jsx'
+import LayoutDoctor from './components/doctor/layout/layout.doctor.jsx'
+import DashboardDoctor from './pages/doctor/dashboard.jsx'
+import Schedule from './pages/doctor/schedule.jsx'
+import ListPatient from './pages/doctor/patient.jsx'
+import Message from './pages/doctor/message.jsx'
+import ProfileDoctor from './pages/doctor/profile.jsx'
 
 const router = createBrowserRouter([
   {
@@ -37,6 +43,32 @@ const router = createBrowserRouter([
       {
         path: "/admin/doctors",
         element: <Doctor />
+      }
+    ]
+  },
+  {
+    path: "/doctor",
+    element: <LayoutDoctor />,
+    children: [
+      {
+        index: true,
+        element: <DashboardDoctor/>
+      },
+      {
+        path: "/doctor/schedule",
+        element: <Schedule />
+      },
+      {
+        path: "/doctor/patient",
+        element: <ListPatient />
+      },
+      {
+        path: "/doctor/chat",
+        element: <Message />
+      },
+      {
+        path: "/doctor/profile",
+        element: <ProfileDoctor />
       }
     ]
   },

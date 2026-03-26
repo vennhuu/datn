@@ -10,10 +10,6 @@ const User = () => {
     const [pageSize , setPageSize] = useState(10) ;
     const [total , setTotal] = useState(0) ;
 
-    useEffect(() => {
-        loadUser();
-    }, [current, pageSize]);
-
     const loadUser = async() => {
         const res = await fetchAllUserAPI(current , pageSize) ;
         if ( res.data ) {
@@ -22,7 +18,12 @@ const User = () => {
             setPageSize(res.data.meta.pageSize);
             setTotal(res.data.meta.totalElements);
         }
-    }
+    };
+
+    useEffect(() => {
+        loadUser();
+    }, [current, pageSize]);
+
     return (
         <>
             <UserForm loadUser={loadUser}/>
