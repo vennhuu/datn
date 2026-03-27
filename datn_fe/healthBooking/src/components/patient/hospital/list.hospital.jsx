@@ -4,6 +4,7 @@ import {
   ArrowRightOutlined,
   MedicineBoxOutlined,
 } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const ListHospital = (props) => {
   const { dataHospital } = props;
@@ -212,9 +213,11 @@ const ListHospital = (props) => {
                       </span>
                     </div>
 
-                    <button className="hospital-card__btn">
-                      Chi tiết <ArrowRightOutlined />
-                    </button>
+                    <Link to={`/hospital/${item.id}`}>
+                      <button className="hospital-card__btn">
+                        Chi tiết <ArrowRightOutlined />
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>

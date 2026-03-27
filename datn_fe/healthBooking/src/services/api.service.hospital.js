@@ -1,9 +1,24 @@
 import axios from "./axios.customize";
 
-const fetchAllHospitalAPI = (current = 1, pageSize = 5) => {
-    const URL_BACKEND = `/api/v1/hospitals?current=${current}&pageSize=${pageSize}`
+const fetchAllHospitalAPI = (current = 1, pageSize = 5, filters = {}) => {
+    let URL_BACKEND = `/api/v1/hospitals?page=${current - 1}&size=${pageSize}`;
+
+    let filterQuery = [];
+
+    if (filters.name) {
+        filterQuery.push(`name~'${filters.name}'`);
+    }
+
+    if (filters.city) {
+        filterQuery.push(`city:'${filters.city}'`);
+    }
+
+    if (filterQuery.length > 0) {
+        URL_BACKEND += `&filter=${filterQuery.join(" and ")}`;
+    }
+
     return axios.get(URL_BACKEND);
-}
+};
 
 const createNewHospitalAPI = (name , city, introduction, logo , address , rating ) => {
     const URL_BACKEND = "/api/v1/hospitals"
@@ -61,4 +76,8 @@ const updateHospitalLogoAPI = (id, logo) => {
 
     return axios.put(URL_BACKEND, params)
 }
-export {fetchAllHospitalAPI , createNewHospitalAPI , deleteHospitalAPI , updateHospitalAPI , updateHospitalAvatarAPI , updateHospitalLogoAPI} ;
+
+const fetchHospitalByIdAPI = (id) => {
+    return axios.get(`/api/v1/hospitals/${id}`);
+};
+export { fetchAllHospitalAPI , createNewHospitalAPI , deleteHospitalAPI , updateHospitalAPI , updateHospitalAvatarAPI , updateHospitalLogoAPI , fetchHospitalByIdAPI} ;

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.datn.Domain.Hospital;
@@ -37,13 +38,17 @@ public class HospitalService {
         return this.save(newHospital) ;
     }
 
-    public ResPageResultDTO getAllHospitals(int currentPage, int pageSize, Pageable pageable) {
+    public ResPageResultDTO getAllHospitals(
+        // int currentPage, int pageSize, Pageable pageable
+        Specification<Hospital> spec ,
+        Pageable pageable
+    ) {
         ResPageResultDTO res = new ResPageResultDTO() ;
 
-        Page<Hospital> pageHospital = this.hospitalRepository.findAll(pageable) ;
+        Page<Hospital> pageHospital = this.hospitalRepository.findAll(spec , pageable) ;
         Meta meta = new Meta() ;
-        meta.setCurrentPage(currentPage);
-        meta.setPageSize(pageSize);
+        meta.setCurrentPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
         meta.setTotalElements(pageHospital.getTotalElements());
         meta.setTotalPages(pageHospital.getTotalPages());
 

@@ -9,13 +9,17 @@ const Hospital = () => {
   const [current , setCurrent] = useState(1) ;
   const [pageSize , setPageSize] = useState(10) ;
   const [total , setTotal] = useState(0) ;
+  const [filters, setFilters] = useState({
+    name: "",
+    city: ""
+  });
 
   useEffect(() => {
     loadHospital();
-  }, [current, pageSize]);
+  }, [current, pageSize , filters]);
 
   const loadHospital = async() => {
-    const res = await fetchAllHospitalAPI(current , pageSize) ;
+    const res = await fetchAllHospitalAPI(current, pageSize, filters);
     if ( res.data ) {
       setDataHospital(res.data.result) ;
       setCurrent(res.data.meta.currentPage) ;
@@ -26,7 +30,7 @@ const Hospital = () => {
 
   return (
     <div style={{ padding: "40px 80px" }}>
-      <HospitalFilter/>
+      <HospitalFilter setFilters = {setFilters}/>
 
       {/* LIST */}
       <ListHospital dataHospital={dataHospital}/>

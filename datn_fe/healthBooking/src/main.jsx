@@ -27,6 +27,7 @@ import ListPatient from './pages/doctor/patient.jsx'
 import Message from './pages/doctor/message.jsx'
 import ProfileDoctor from './pages/doctor/profile.jsx'
 import ListHospitalAdmin from './pages/admin/hospital.jsx'
+import HospitalDetail from './pages/patient/hospital.detail.jsx'
 
 const router = createBrowserRouter([
   {
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       {
         path: "/hospital",
         element: <Hospital />
+      },
+      {
+        path: "/hospital/:id",
+        element: <HospitalDetail />
       },
       {
         path: "/view",

@@ -1,10 +1,7 @@
 package com.example.datn.Controller;
 
-import java.util.Optional;
-
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +18,7 @@ import com.example.datn.Domain.response.pagination.ResPageResultDTO;
 import com.example.datn.Service.HospitalService;
 import com.example.datn.Utils.annotation.APIMessage;
 import com.example.datn.Utils.errors.InvalidException;
+import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 
@@ -47,16 +45,11 @@ public class HospitalController {
     @GetMapping("/hospitals")
     @APIMessage("Get all hospital")
     public ResponseEntity<ResPageResultDTO> getAllHospital(
-        @RequestParam("current") Optional<String> currentOptional,
-        @RequestParam("pageSize") Optional<String> pageSizeOptional
+        @Filter Specification<Hospital> spec , 
+        Pageable pageable
     ) {
 
-        int currentPage = Integer.parseInt(currentOptional.orElse("1"));
-        int pageSize = Integer.parseInt(pageSizeOptional.orElse("10"));
-
-        Pageable pageable = PageRequest.of(currentPage - 1, pageSize, Sort.by("id"));
-
-        return ResponseEntity.ok( hospitalService.getAllHospitals(currentPage, pageSize, pageable) );
+        return ResponseEntity.ok( hospitalService.getAllHospitals(spec , pageable) );
     }
 
     // GET BY ID
