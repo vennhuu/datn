@@ -1,10 +1,12 @@
 package com.example.datn.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -83,15 +85,15 @@ public class DoctorService {
     }
 
     // lấy tất cả bác sĩ
-    public ResPageResultDTO getAllDoctors(int currentPage, int pageSize, Pageable pageable) {
+    public ResPageResultDTO getAllDoctors(Specification spec, Pageable pageable) {
 
-        Page<Doctor> pageDoctor = doctorRepository.findAll(pageable);
+        Page<Doctor> pageDoctor = doctorRepository.findAll(spec , pageable);
 
         ResPageResultDTO res = new ResPageResultDTO();
         Meta meta = new Meta();
 
-        meta.setCurrentPage(currentPage);
-        meta.setPageSize(pageSize);
+        meta.setCurrentPage(pageDoctor.getNumber() + 1);
+        meta.setPageSize(pageDoctor.getSize());
         meta.setTotalElements(pageDoctor.getTotalElements());
         meta.setTotalPages(pageDoctor.getTotalPages());
 
@@ -174,7 +176,7 @@ public class DoctorService {
 
         res.setSpecialization(doctor.getSpecialization());
         res.setDegree(doctor.getDegree());
-        res.setHospital(doctor.getHospital().getName());
+        res.setHospital(doctor.getHospital());
         res.setExperienceYears(doctor.getExperienceYears());
         res.setBio(doctor.getBio());
 
@@ -195,5 +197,11 @@ public class DoctorService {
             return optionalUser.get() ;
         }
         return null ;
+    }
+
+    public List<ResDoctor> findByHospitalId( long id ) {
+        List<Doctor> listDoctors = this.doctorRepository.findByHospitalId(id) ;
+        List<ResDoctor> listResDoctor = listDoctors.stream().map(this::convertToResDoctor).toList() ;
+        return listResDoctor ;
     }
 }

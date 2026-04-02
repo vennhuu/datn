@@ -54,6 +54,8 @@ public class Doctor {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
+    private Double price ;
+
     @ManyToOne
     @JoinColumn(name = "hospital_id", nullable = false)
     private Hospital hospital;

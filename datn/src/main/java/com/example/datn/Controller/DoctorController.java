@@ -1,10 +1,9 @@
 package com.example.datn.Controller;
 
-import java.util.Optional;
+import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,15 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.datn.Domain.Doctor;
 import com.example.datn.Domain.User;
 import com.example.datn.Domain.request.ReqCreateDoctor;
 import com.example.datn.Domain.request.ReqUpdateDoctor;
 import com.example.datn.Domain.response.doctor.ResDoctor;
 import com.example.datn.Domain.response.pagination.ResPageResultDTO;
 import com.example.datn.Service.DoctorService;
+import com.example.datn.Service.HospitalService;
 import com.example.datn.Service.UserService;
 import com.example.datn.Utils.annotation.APIMessage;
 import com.example.datn.Utils.errors.InvalidException;
+import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 
@@ -34,10 +36,12 @@ public class DoctorController {
 
     private final DoctorService doctorService;
     private final UserService userService ;
+    private final HospitalService hospitalService ;
 
-    public DoctorController(DoctorService doctorService , UserService userService) {
+    public DoctorController(DoctorService doctorService , UserService userService , HospitalService hospitalService) {
         this.doctorService = doctorService;
         this.userService = userService ;
+        this.hospitalService = hospitalService ;
     }
 
     // CREATE
@@ -54,18 +58,9 @@ public class DoctorController {
     @GetMapping("/doctors")
     @APIMessage("Get all doctor")
     public ResponseEntity<ResPageResultDTO> getAllDoctors(
-        @RequestParam("current") Optional<String> currentOptional,
-        @RequestParam("pageSize") Optional<String> pageSizeOptional
+        @Filter Specification<Doctor> spec , Pageable pageable
     ) {
-
-        int currentPage = Integer.parseInt(currentOptional.orElse("1"));
-        int pageSize = Integer.parseInt(pageSizeOptional.orElse("10"));
-
-        Pageable pageable = PageRequest.of(currentPage - 1, pageSize, Sort.by("id"));
-
-        return ResponseEntity.ok(
-            doctorService.getAllDoctors(currentPage, pageSize, pageable)
-        );
+        return ResponseEntity.ok( this.doctorService.getAllDoctors(spec , pageable) );
     }
 
     // GET BY ID
@@ -117,4 +112,14 @@ public class DoctorController {
 
         return ResponseEntity.ok("Avatar updated");
     }
+
+    @GetMapping("/by-hospital/{id}")
+    @APIMessage("Get all doctor by hospital id")
+    public ResponseEntity<List<ResDoctor>> getAllDoctorByHospitalId(@PathVariable long id) throws InvalidException{
+        if ( !this.hospitalService.existById(id) ) {
+            throw new InvalidException("Khong co benh vien nay") ;
+        }
+        return ResponseEntity.ok(this.doctorService.findByHospitalId(id));
+    }
+    
 }

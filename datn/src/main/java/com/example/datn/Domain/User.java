@@ -73,6 +73,9 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String about;
 
+    @Column(columnDefinition = "TEXT")
+    private String refreshToken ;
+
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

@@ -8,5 +8,5 @@ import com.example.datn.Domain.Hospital;
 
 @Repository
 public interface HospitalRepository extends JpaRepository<Hospital , Long> , JpaSpecificationExecutor<Hospital> {
-    
+
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import UserForm from "../../components/admin/doctor/doctor.form";
 import DoctorForm from "../../components/admin/doctor/doctor.form";
 import TableDoctor from "../../components/admin/doctor/table.doctor";
 import { fetchAllDoctorAPI } from "../../services/api.service.doctor";
@@ -20,8 +19,6 @@ const Doctor = () => {
         const res = await fetchAllDoctorAPI(current , pageSize) ;
         if ( res.data ) {
             setDataDoctors(res.data.result);
-            setCurrent(res.data.meta.currentPage);
-            setPageSize(res.data.meta.pageSize);
             setTotal(res.data.meta.totalElements);
         }
     }

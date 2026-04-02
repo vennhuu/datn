@@ -134,7 +134,7 @@ const ViewDoctorDetail = (props) => {
                             {
                                 icon: "🏥",
                                 label: "Bệnh viện",
-                                value: dataDetail.hospital || "—"
+                                value: dataDetail.hospital.name || "—"
                             },
                             {
                                 icon: "⏳",

@@ -139,4 +139,27 @@ public class UserService {
         return savedUser;
     }
 
+    public User findByEmail ( String email ) {
+        return this.userRepository.findByEmail( email ) ;
+    }
+
+    public void updateUserToken(String token , String email) {
+        User currentUser = this.findByEmail(email) ;
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            this.userRepository.save(currentUser);
+        }
+    }
+
+    public User getUserByRefreshTokenAndEmail(String token, String email) {
+        return this.userRepository.findByRefreshTokenAndEmail(token, email);
+    }
+
+    public void resetPassword(String email, String newPassword) {
+        User user = this.findByEmail(email);
+        if (user == null) throw new RuntimeException("User không tồn tại");
+        user.setPassword(passwordEncoder.encode(newPassword));
+        this.userRepository.save(user);
+    }
+
 }

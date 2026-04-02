@@ -8,100 +8,152 @@ import {
   Tag,
   Select,
   Divider,
-  List,
+  Spin,
 } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { fetchDoctorByIdAPI } from "../../services/api.service.doctor";
 
 const DoctorDetail = () => {
+  const { id } = useParams();
+
   const [selectedTime, setSelectedTime] = useState(null);
+  const [doctor, setDoctor] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // 🔥 DATA
-  const doctor = {
-    name: "BS CKII Lê Hồng Anh",
-    specialization: "Hô hấp",
-    hospital: "Bệnh viện Bạch Mai",
-    experience: 20,
-    degree: "Bác sĩ CKII",
-    bio: "Chuyên gia đầu ngành về bệnh phổi, COPD, hen suyễn...",
-    rating: 4.7,
-    reviews: 150,
-    price: "300.000đ",
-    address: "Hà Nội",
-    avatar: "https://i.pravatar.cc/150?img=15",
-  };
-
-  const schedules = ["08:00", "09:00", "10:00", "13:30", "14:30"];
-
-  const reviews = [
-    {
-      name: "Nguyễn Văn A",
-      rating: 5,
-      comment: "Bác sĩ rất tận tình, khám kỹ.",
-    },
-    {
-      name: "Trần Thị B",
-      rating: 4,
-      comment: "Tư vấn dễ hiểu, nhiệt tình.",
-    },
+  const schedules = [
+    "09:00 - 09:30",
+    "09:30 - 10:00",
+    "10:00 - 10:30",
+    "10:30 - 11:00",
+    "11:00 - 11:30",
+    "13:30 - 14:00",
+    "14:00 - 14:30",
+    "14:30 - 15:00",
+    "15:00 - 15:30",
+    "15:30 - 16:00",
   ];
 
+  useEffect(() => {
+    const fetchDoctor = async () => {
+      try {
+        const res = await fetchDoctorByIdAPI(id);
+        setDoctor(res.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctor();
+  }, [id]);
+
+  if (loading) return <Spin fullscreen />;
+  if (!doctor) return <p>Không tìm thấy bác sĩ</p>;
+
+  console.log("doctor" , doctor) ;
   return (
-    <div style={{ background: "#f5f7fa", padding: "20px 80px" }}>
+    <div style={{ background: "#f0f2f5", padding: "30px 100px" }}>
+      
       {/* HEADER */}
       <Card style={{ borderRadius: 12 }}>
-        <Row gutter={16}>
+        <Row gutter={20} align="middle">
           <Col>
-            <Avatar size={120} src={doctor.avatar} />
+            <Avatar
+              size={100}
+              src={`${import.meta.env.VITE_BACKEND_URL}/storage/avt_doctor/${doctor.avatar}`}
+            />
           </Col>
 
           <Col flex={1}>
-            <h2>{doctor.name}</h2>
-            <Tag color="blue">{doctor.specialization}</Tag>
+            <h2 style={{ marginBottom: 5 }}>{doctor.user?.name}</h2>
 
-            <p>{doctor.hospital}</p>
+            <Tag color="processing">{doctor.specialization}</Tag>
 
-            <Rate disabled value={doctor.rating} />
-            <span> ({doctor.reviews} đánh giá)</span>
+            <p style={{ margin: "5px 0", color: "#555" }}>
+              <Link to>{doctor.hospital?.name}</Link>
+            </p>
+
+            <Rate disabled allowHalf value={4.5} />
+            <span style={{ marginLeft: 8, color: "#888" }}>
+              (150 đánh giá)
+            </span>
           </Col>
         </Row>
       </Card>
 
       <Row gutter={24} style={{ marginTop: 20 }}>
+        
         {/* LEFT */}
         <Col span={16}>
+          
           {/* BOOKING */}
           <Card style={{ borderRadius: 12 }}>
-            <h3>Đặt lịch khám</h3>
+            <h3 style={{ color: "#1890ff" }}>Lịch khám</h3>
 
             <Divider />
 
             <Select
               defaultValue="today"
-              style={{ width: 200, marginBottom: 20 }}
+              style={{ width: 220, marginBottom: 20 }}
               options={[
-                { value: "today", label: "Hôm nay" },
+                { value: "today", label: "Thứ 3 - Hôm nay" },
                 { value: "tomorrow", label: "Ngày mai" },
               ]}
             />
 
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               {schedules.map((time) => (
-                <Button
+                <div
                   key={time}
-                  type={selectedTime === time ? "primary" : "default"}
                   onClick={() => setSelectedTime(time)}
+                  onMouseEnter={(e) => {
+                    if (selectedTime !== time) {
+                      e.currentTarget.style.background = "#e6f7ff";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedTime !== time) {
+                      e.currentTarget.style.background = "#f5f5f5";
+                    }
+                  }}
+                  style={{
+                    padding: "10px 18px",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                    border: "1px solid #d9d9d9",
+                    background:
+                      selectedTime === time ? "#1890ff" : "#f5f5f5",
+                    color: selectedTime === time ? "#fff" : "#333",
+                    fontWeight: 500,
+                    minWidth: 130,
+                    textAlign: "center",
+                    transition: "all 0.2s",
+                  }}
                 >
                   {time}
-                </Button>
+                </div>
               ))}
             </div>
 
+            <p style={{ marginTop: 10, color: "#888", fontSize: 13 }}>
+              Chọn ☝ và đặt (Phí đặt lịch 0đ)
+            </p>
+
             <Button
               type="primary"
-              style={{ marginTop: 20 }}
+              size="large"
+              block
+              style={{
+                marginTop: 20,
+                borderRadius: 8,
+                height: 45,
+                fontWeight: "bold",
+              }}
               disabled={!selectedTime}
             >
-              Đặt lịch
+              Đặt lịch khám
             </Button>
           </Card>
 
@@ -110,50 +162,49 @@ const DoctorDetail = () => {
             <h3>Thông tin bác sĩ</h3>
 
             <p><b>Bằng cấp:</b> {doctor.degree}</p>
-            <p><b>Kinh nghiệm:</b> {doctor.experience} năm</p>
-
-            <p style={{ marginTop: 10 }}>{doctor.bio}</p>
-          </Card>
-
-          {/* REVIEWS */}
-          <Card style={{ marginTop: 20, borderRadius: 12 }}>
-            <h3>Đánh giá bệnh nhân</h3>
-
-            <List
-              itemLayout="vertical"
-              dataSource={reviews}
-              renderItem={(item) => (
-                <List.Item>
-                  <b>{item.name}</b>
-                  <div>
-                    <Rate disabled value={item.rating} />
-                  </div>
-                  <p>{item.comment}</p>
-                </List.Item>
-              )}
-            />
+            <p><b>Kinh nghiệm:</b> {doctor.experienceYears} năm</p>
+            <p style={{ color: "#555" }}>{doctor.bio}</p>
           </Card>
         </Col>
 
         {/* RIGHT */}
         <Col span={8}>
-          <Card style={{ borderRadius: 12 }}>
-            <h3>Thông tin khám</h3>
+          <div style={{ position: "sticky", top: 20 }}>
+            <Card style={{ borderRadius: 12 }}>
+              <h3>Địa chỉ khám</h3>
 
-            <p><b>Bệnh viện:</b> {doctor.hospital}</p>
-            <p><b>Địa chỉ:</b> {doctor.address}</p>
+              <p style={{ fontWeight: "bold", color: "#1890ff" }}>
+                <Link to={`/hospital/${doctor.hospital.id}`}>{doctor.hospital.name}</Link>
+              </p>
 
-            <p>
-              <b>Giá khám:</b>{" "}
-              <span style={{ color: "red" }}>{doctor.price}</span>
-            </p>
+              <p>{doctor.hospital.address}</p>
 
-            <Divider />
+              <Divider />
 
-            <Button type="primary" block disabled={!selectedTime}>
-              Đặt lịch ngay
-            </Button>
-          </Card>
+              <p>
+                <b>Giá khám:</b>{" "}
+                <span style={{ color: "red", fontWeight: "bold" }}>
+                  {doctor.price} VND
+                </span>
+              </p>
+
+              <Divider />
+
+              <Button
+                type="primary"
+                block
+                size="large"
+                disabled={!selectedTime}
+                style={{
+                  borderRadius: 8,
+                  height: 45,
+                  fontWeight: "bold",
+                }}
+              >
+                Đặt lịch ngay
+              </Button>
+            </Card>
+          </div>
         </Col>
       </Row>
     </div>

@@ -1,7 +1,7 @@
 import axios from "./axios.customize";
 
 const fetchAllHospitalAPI = (current = 1, pageSize = 5, filters = {}) => {
-    let URL_BACKEND = `/api/v1/hospitals?page=${current - 1}&size=${pageSize}`;
+    let URL_BACKEND = `/api/v1/hospitals?page=${current}&size=${pageSize}`;
 
     let filterQuery = [];
 

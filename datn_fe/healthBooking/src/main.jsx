@@ -10,7 +10,6 @@ import Doctor from './pages/admin/doctor.jsx'
 import LayoutPatient from './components/patient/layout/layout.patient.jsx'
 import Dashboard from './pages/admin/dashboard.jsx'
 import Homepage from './pages/patient/homepage.jsx'
-import DoctorList from './pages/patient/list.doctors.jsx'
 import Specialization from './pages/patient/specialization.jsx'
 import Hospital from './pages/patient/hospital.jsx'
 import DoctorDetail from './pages/patient/view.doctor.detail.jsx'
@@ -28,6 +27,8 @@ import Message from './pages/doctor/message.jsx'
 import ProfileDoctor from './pages/doctor/profile.jsx'
 import ListHospitalAdmin from './pages/admin/hospital.jsx'
 import HospitalDetail from './pages/patient/hospital.detail.jsx'
+import DoctorList from './pages/patient/doctors.jsx'
+import 'nprogress/nprogress.css'
 
 const router = createBrowserRouter([
   {
@@ -103,7 +104,7 @@ const router = createBrowserRouter([
         element: <HospitalDetail />
       },
       {
-        path: "/view",
+        path: "/doctors/:id",
         element: <DoctorDetail />
       },
       {

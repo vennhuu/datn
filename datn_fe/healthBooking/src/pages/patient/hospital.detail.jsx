@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchHospitalByIdAPI } from "../../services/api.service.hospital";
+import { fetchAllDoctorByHospitalIdAPI } from "../../services/api.service.doctor";
 import { Rate, Spin } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
+import DoctorListByHospitalId from "../../components/patient/view.detail.hospital/doctor.list.by.hospital.id";
 
 const HospitalDetail = () => {
 
     const { id } = useParams();
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(false);
 
-    console.log("id" , id)
+    const [data, setData] = useState(null);
+    const [doctors, setDoctors] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         loadHospital();
+        loadDoctors();
     }, [id]);
 
     const loadHospital = async () => {
@@ -25,13 +28,20 @@ const HospitalDetail = () => {
         setLoading(false);
     };
 
+    const loadDoctors = async () => {
+        const res = await fetchAllDoctorByHospitalIdAPI(id);
+        if (res.data) {
+            setDoctors(res.data);
+        }
+    };
+
     if (loading) return <Spin />;
 
     if (!data) return <p>Không có dữ liệu</p>;
 
     return (
         <div style={{ padding: "40px 80px", fontFamily: "Be Vietnam Pro" }}>
-            
+
             {/* HEADER */}
             <div style={{
                 display: "flex",
@@ -80,6 +90,10 @@ const HospitalDetail = () => {
                     {data.introduction}
                 </p>
             </div>
+
+            {/* DOCTOR LIST */}
+            <DoctorListByHospitalId doctors={doctors} />
+
         </div>
     );
 };

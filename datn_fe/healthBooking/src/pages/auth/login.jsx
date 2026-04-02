@@ -1,10 +1,36 @@
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, notification } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import backgroundLogin from "../../assets/backgroundLogin.jpg"
+import { loginUserAPI } from "../../services/api.services.auth";
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log("Login:", values);
+  const onFinish = async (values) => {
+    try {
+      const res = await loginUserAPI(values.email, values.password);
+
+      if (res && res.data) {
+        localStorage.setItem("access_token", res.data.accessToken);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        notification.success({
+          message: "Đăng nhập thành công",
+          description: `Chào mừng ${res.data.user?.name}!`,
+        });
+
+        window.location.href = "/";
+      } else {
+        notification.error({
+          message: "Đăng nhập thất bại",
+          description: res?.message || "Sai email hoặc mật khẩu",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: "Lỗi server",
+        description: error?.response?.data?.message || "Vui lòng thử lại sau",
+      });
+    }
   };
 
   return (
