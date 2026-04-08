@@ -29,6 +29,7 @@ import ListHospitalAdmin from './pages/admin/hospital.jsx'
 import HospitalDetail from './pages/patient/hospital.detail.jsx'
 import DoctorList from './pages/patient/doctors.jsx'
 import 'nprogress/nprogress.css'
+import OAuth2Callback from './pages/auth/OAuth2Callback.jsx'
 
 const router = createBrowserRouter([
   {
@@ -124,6 +125,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />
+  },
+  {
+    path: "/oauth2/callback",
+    element: <OAuth2Callback />
   },
   {
     path: "/forgot-password",

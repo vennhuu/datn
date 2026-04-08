@@ -18,13 +18,13 @@ const fetchAllDoctorAPI = (current = 1, pageSize = 10, filters = {}) => {
         filterQuery.push(`hospital.name~'${filters.hospital}'`);
     }
 
-    // if (filters.minPrice) {
-    //     filterQuery.push(`price>:${filters.minPrice}`);
-    // }
+    if (filters.minPrice) {
+        filterQuery.push(`price>:${filters.minPrice}`);
+    }
 
-    // if (filters.maxPrice) {
-    //     filterQuery.push(`price<:${filters.maxPrice}`);
-    // }
+    if (filters.maxPrice) {
+        filterQuery.push(`price<:${filters.maxPrice}`);
+    }
 
     if (filterQuery.length > 0) {
         URL_BACKEND += `&filter=${encodeURIComponent(filterQuery.join(" and "))}`;

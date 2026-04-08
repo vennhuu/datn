@@ -5,33 +5,41 @@ import { loginUserAPI } from "../../services/api.services.auth";
 
 const Login = () => {
   const onFinish = async (values) => {
-    try {
-      const res = await loginUserAPI(values.email, values.password);
+  try {
+    const res = await loginUserAPI(values.email, values.password);
 
-      if (res && res.data) {
-        localStorage.setItem("access_token", res.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+    if (res && res.data) {
+      localStorage.setItem("access_token", res.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-        notification.success({
-          message: "Đăng nhập thành công",
-          description: `Chào mừng ${res.data.user?.name}!`,
-        });
+      notification.success({
+        message: "Đăng nhập thành công",
+        description: `Chào mừng ${res.data.user?.name}!`,
+      });
 
-        window.location.href = "/";
+      const roleName = res.data.user?.role?.name;
+      if (roleName === "ROLE_DOCTOR") {
+        window.location.href = "/doctor";
+      } else if (roleName === "ROLE_ADMIN") {
+        window.location.href = "/admin";
       } else {
-        notification.error({
-          message: "Đăng nhập thất bại",
-          description: res?.message || "Sai email hoặc mật khẩu",
-        });
+        window.location.href = "/";
       }
-    } catch (error) {
-      console.log(error);
+
+    } else {  // ← đóng if ở đây, KHÔNG có window.location.href ở giữa
       notification.error({
-        message: "Lỗi server",
-        description: error?.response?.data?.message || "Vui lòng thử lại sau",
+        message: "Đăng nhập thất bại",
+        description: res?.message || "Sai email hoặc mật khẩu",
       });
     }
-  };
+  } catch (error) {
+    console.log(error);
+    notification.error({
+      message: "Lỗi server",
+      description: error?.response?.data?.message || "Vui lòng thử lại sau",
+    });
+  }
+};
 
   return (
     <div
@@ -138,6 +146,19 @@ const Login = () => {
           <div style={{ marginTop: 10 }}>
             Chưa có tài khoản? <a href="/register">Đăng kí</a>
           </div>
+
+          <div style={{ textAlign: "center", marginTop: 16 }}>
+            <p style={{ color: "#999", marginBottom: 12 }}>Hoặc đăng nhập với</p>
+            <Button
+                icon={<img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
+                    width={18} style={{ marginRight: 8 }} />}
+                onClick={() => window.location.href = "http://localhost:8080/oauth2/authorization/google"}
+                style={{ width: "100%", height: 40, display: "flex",
+                    alignItems: "center", justifyContent: "center" }}
+            >
+                Đăng nhập với Google
+            </Button>
+        </div>
 
           <div style={{ marginTop: 20 }}>
             <b>TỔNG ĐÀI HỖ TRỢ</b>

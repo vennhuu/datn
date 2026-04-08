@@ -1,8 +1,23 @@
 import { HomeOutlined, MedicineBoxOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const SideBar = () => {
+    const [current, setCurrent] = useState('');
+    const location = useLocation();
+
+    useEffect(() => {
+    if (location.pathname.startsWith("/admin/users")) {
+        setCurrent("users");
+    } else if (location.pathname.startsWith("/admin/doctors")) {
+        setCurrent("doctors");
+    } else if (location.pathname.startsWith("/admin/hospitals")) {
+        setCurrent("hospitals");
+    } else {
+        setCurrent("home");
+    }
+}, [location]);
 
     const items = [
         {
@@ -54,6 +69,7 @@ const SideBar = () => {
                 mode="inline"
                 items={items}
                 style={{ borderRight: 0 }}
+                selectedKeys={[current]}
             />
         </div>
     );

@@ -1,101 +1,43 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Spin } from "antd";
 import { fetchHospitalByIdAPI } from "../../services/api.service.hospital";
 import { fetchAllDoctorByHospitalIdAPI } from "../../services/api.service.doctor";
-import { Rate, Spin } from "antd";
-import { EnvironmentOutlined } from "@ant-design/icons";
-import DoctorListByHospitalId from "../../components/patient/view.detail.hospital/doctor.list.by.hospital.id";
+import HospitalHeader from "../../components/patient/view.detail.hospital/header.view.detail.hospital";
+import HospitalIntro from "../../components/patient/view.detail.hospital/hospital.intro";
+import DoctorListByHospitalId from "../../components/patient/view.detail.hospital/doctor.card";
+
 
 const HospitalDetail = () => {
+  const { id } = useParams();
+  const [data, setData] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-    const { id } = useParams();
-
-    const [data, setData] = useState(null);
-    const [doctors, setDoctors] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        loadHospital();
-        loadDoctors();
-    }, [id]);
-
-    const loadHospital = async () => {
-        setLoading(true);
-        const res = await fetchHospitalByIdAPI(id);
-        if (res.data) {
-            setData(res.data);
-        }
-        setLoading(false);
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const [hospitalRes, doctorRes] = await Promise.all([
+        fetchHospitalByIdAPI(id),
+        fetchAllDoctorByHospitalIdAPI(id),
+      ]);
+      if (hospitalRes?.data) setData(hospitalRes.data);
+      if (doctorRes?.data) setDoctors(doctorRes.data);
+      setLoading(false);
     };
+    load();
+  }, [id]);
 
-    const loadDoctors = async () => {
-        const res = await fetchAllDoctorByHospitalIdAPI(id);
-        if (res.data) {
-            setDoctors(res.data);
-        }
-    };
+  if (loading) return <Spin fullscreen />;
+  if (!data) return <p style={{ padding: 40 }}>Không tìm thấy bệnh viện</p>;
 
-    if (loading) return <Spin />;
-
-    if (!data) return <p>Không có dữ liệu</p>;
-
-    return (
-        <div style={{ padding: "40px 80px", fontFamily: "Be Vietnam Pro" }}>
-
-            {/* HEADER */}
-            <div style={{
-                display: "flex",
-                gap: 20,
-                marginBottom: 30,
-                background: "#fff",
-                padding: 20,
-                borderRadius: 16,
-                boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
-            }}>
-                <img
-                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/logo_hospital/${data.logo}`}
-                    alt=""
-                    style={{
-                        width: 120,
-                        height: 120,
-                        objectFit: "cover",
-                        borderRadius: 12
-                    }}
-                />
-
-                <div>
-                    <h2 style={{ marginBottom: 10 }}>{data.name}</h2>
-
-                    <p style={{ color: "#64748b" }}>
-                        <EnvironmentOutlined /> {data.address}
-                    </p>
-
-                    <Rate disabled value={data.rating} allowHalf />
-                </div>
-            </div>
-
-            {/* INTRODUCTION */}
-            <div style={{
-                background: "#fff",
-                padding: 20,
-                borderRadius: 16,
-                boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
-            }}>
-                <h3>Giới thiệu</h3>
-
-                <p style={{
-                    lineHeight: 1.7,
-                    color: "#334155"
-                }}>
-                    {data.introduction}
-                </p>
-            </div>
-
-            {/* DOCTOR LIST */}
-            <DoctorListByHospitalId doctors={doctors} />
-
-        </div>
-    );
+  return (
+    <div style={{ background: "#f0f4f8", minHeight: "100vh", padding: "40px 80px" }}>
+      <HospitalHeader data={data} />
+      <HospitalIntro introduction={data.introduction} />
+      <DoctorListByHospitalId doctors={doctors} />
+    </div>
+  );
 };
 
 export default HospitalDetail;

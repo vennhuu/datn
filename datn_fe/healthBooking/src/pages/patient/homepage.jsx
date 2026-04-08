@@ -1,32 +1,42 @@
-import { Content } from "antd/es/layout/layout";
 import Banner from "../../components/patient/homepage/banner";
 import Specialization from "../../components/patient/homepage/specialization";
 import ListDoctor from "../../components/patient/homepage/list.doctor";
-import ScheduleProcess from "../../components/patient/homepage/schedule.process";
 import ListHospital from "../../components/patient/homepage/list.hospital";
+import ScheduleProcess from "../../components/patient/homepage/schedule.process";
+import QuickAccess from "../../components/patient/homepage/QuickAccess";
+import TrustBar from "../../components/patient/homepage/trustbar";
 
 const Homepage = () => {
-    return  (
-        <>
-            {/* HERO */}
-            <Banner/>
+  return (
+    <>
+      {/* HERO BANNER */}
+      <Banner />
 
-            {/* CONTENT */}
-            <Content style={{ padding: "40px 80px" }}>
-                {/* CHUYÊN KHOA */}
-                <Specialization/>
+      {/* QUICK ACCESS — overlaps the banner */}
+      <QuickAccess />
 
-                {/* BÁC SĨ */}
-                <ListDoctor/>
+      {/* TRUST BAR */}
+      <div style={{ marginTop: 48 }}>
+        <TrustBar />
+      </div>
 
-                <ListHospital/>
+      {/* MAIN CONTENT */}
+      <div style={styles.content}>
+        <Specialization />
+        <ListDoctor />
+        <ListHospital />
+        <ScheduleProcess />
+      </div>
+    </>
+  );
+};
 
-                {/* QUY TRÌNH */}
-                <ScheduleProcess/>
+const styles = {
+  content: {
+    maxWidth: 1200,
+    margin: "0 auto",
+    padding: "0 48px",
+  },
+};
 
-            </Content>
-        </>
-    )
-}
-
-export default Homepage ;
+export default Homepage;
