@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import com.example.datn.Domain.User;
 import com.example.datn.Domain.request.ReqLoginDTO;
 import com.example.datn.Domain.response.ResLoginDTO;
 import com.example.datn.Domain.response.ResUser;
+import com.example.datn.Service.EmailService;
 import com.example.datn.Service.UserService;
 import com.example.datn.Service.VerificationService;
 import com.example.datn.Utils.SecurityUtil;
@@ -27,11 +30,6 @@ import com.example.datn.Utils.annotation.APIMessage;
 import com.example.datn.Utils.errors.InvalidException;
 
 import jakarta.validation.Valid;
-
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import com.example.datn.Service.EmailService;
 
 @RestController
 @RequestMapping("/api/v1")

@@ -30,4 +30,5 @@ public class ResDoctor {
     private Hospital hospital;
     private String experienceYears;
     private String bio;
+    private double price ;
 }

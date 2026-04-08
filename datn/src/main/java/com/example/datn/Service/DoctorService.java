@@ -179,6 +179,7 @@ public class DoctorService {
         res.setHospital(doctor.getHospital());
         res.setExperienceYears(doctor.getExperienceYears());
         res.setBio(doctor.getBio());
+        res.setPrice(doctor.getPrice());
 
         return res;
     }

@@ -1,7 +1,5 @@
 package com.example.datn.Domain.response;
 
-import com.example.datn.Domain.Role;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

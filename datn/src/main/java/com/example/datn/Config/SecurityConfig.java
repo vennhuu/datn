@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.datn.Service.OAuth2UserService;
 import com.example.datn.Utils.SecurityUtil;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
@@ -35,7 +36,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http , CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http , 
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+            OAuth2UserService oAuth2UserService,
+            OAuth2SuccessHandler oAuth2SuccessHandler
+        ) throws Exception {
         http
             .csrf(c -> c.disable())
             .cors(Customizer.withDefaults())
@@ -47,16 +53,19 @@ public class SecurityConfig {
                     "/storage/**",
                     "/api/v1/auth/refresh" ,
                     "/api/v1/auth/**",
-                    "/api/v1/files"
-
+                    "/api/v1/files",
+                    "/api/v1/webhook/**"
                 ).permitAll()
                 .anyRequest().authenticated()
                 // .anyRequest().permitAll()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
-            .authenticationEntryPoint(customAuthenticationEntryPoint));
-            
+                .authenticationEntryPoint(customAuthenticationEntryPoint))
+            .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                .successHandler(oAuth2SuccessHandler)
+            );
 
         return http.build();
     }
