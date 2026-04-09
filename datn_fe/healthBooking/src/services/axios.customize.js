@@ -8,35 +8,31 @@ NProgress.configure({
 
 const instance = axios.create({
   baseURL: "",
-  withCredentials: true, // ⚠️ Bắt buộc để gửi/nhận cookie refresh_token
+  withCredentials: true,
 });
 
-// ---- Cờ chống gọi refresh nhiều lần đồng thời ----
 let isRefreshing = false;
-let failedQueue = []; // Hàng đợi các request bị 401 trong lúc đang refresh
+let failedQueue = [];
 
 const processQueue = (error, token = null) => {
   failedQueue.forEach(prom => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
+    if (error) prom.reject(error);
+    else prom.resolve(token);
   });
   failedQueue = [];
 };
 
 // ---- Request Interceptor ----
 instance.interceptors.request.use(
-  function (config) {
+  (config) => {
     NProgress.start();
-    const token = window.localStorage.getItem('access_token');
+    const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = 'Bearer ' + token;
     }
     return config;
   },
-  function (error) {
+  (error) => {
     NProgress.done();
     return Promise.reject(error);
   }
@@ -44,26 +40,25 @@ instance.interceptors.request.use(
 
 // ---- Response Interceptor ----
 instance.interceptors.response.use(
-  function (response) {
+  (response) => {
     NProgress.done();
     if (response.data && response.data.data) return response.data;
     return response;
   },
-  async function (error) {
+  async (error) => {
     NProgress.done();
 
     const originalRequest = error.config;
+    const status = error.response?.status;
 
-    // Nếu lỗi 401 và chưa retry lần nào
+    // ---- Xử lý 401 — tự động refresh token ----
     if (
-      error.response?.status === 401 &&
+      status === 401 &&
       !originalRequest._retry &&
-      // Tránh loop vô tận nếu chính /auth/refresh cũng 401
       !originalRequest.url.includes('/auth/refresh') &&
       !originalRequest.url.includes('/login')
     ) {
       if (isRefreshing) {
-        // Đang refresh rồi → xếp hàng chờ
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -78,30 +73,21 @@ instance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Gọi refresh — cookie refresh_token tự động gửi kèm nhờ withCredentials
         const res = await instance.get('/api/v1/auth/refresh');
-
         const newAccessToken = res?.data?.accessToken ?? res?.accessToken;
 
         if (!newAccessToken) throw new Error("Không lấy được access token mới");
 
-        // Lưu token mới
         localStorage.setItem('access_token', newAccessToken);
 
-        // Cập nhật thông tin user nếu có
-        if (res?.data?.user ?? res?.user) {
-          localStorage.setItem('user', JSON.stringify(res?.data?.user ?? res?.user));
-        }
+        const user = res?.data?.user ?? res?.user;
+        if (user) localStorage.setItem('user', JSON.stringify(user));
 
-        // Thông báo cho hàng đợi
         processQueue(null, newAccessToken);
-
-        // Retry request gốc
         originalRequest.headers.Authorization = 'Bearer ' + newAccessToken;
         return instance(originalRequest);
 
       } catch (refreshError) {
-        // Refresh thất bại → đăng xuất
         processQueue(refreshError, null);
         localStorage.removeItem('access_token');
         localStorage.removeItem('user');
@@ -112,7 +98,14 @@ instance.interceptors.response.use(
       }
     }
 
+    // ---- Xử lý 403 — không có quyền ----
+    if (status === 403) {
+      return Promise.reject(error);
+    }
+
+    // ---- Các lỗi khác (400, 404, 500...) — trả data để component tự xử lý ----
     if (error.response?.data) return error.response.data;
+
     return Promise.reject(error);
   }
 );

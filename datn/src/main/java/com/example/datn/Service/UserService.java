@@ -129,8 +129,10 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        Role role = setRole("ROLE_USER");
-        user.setRole(role);
+        if ( user.getRole() == null ) {
+            Role role = setRole("ROLE_USER");
+            user.setRole(role);
+        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 

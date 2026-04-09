@@ -30,11 +30,18 @@ import HospitalDetail from './pages/patient/hospital.detail.jsx'
 import DoctorList from './pages/patient/doctors.jsx'
 import 'nprogress/nprogress.css'
 import OAuth2Callback from './pages/auth/OAuth2Callback.jsx'
+import ErrorPage from './pages/auth/error.jsx'
+import ProtectedRoute from './components/protected.route.jsx'
 
 const router = createBrowserRouter([
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorPage/>,
     children: [
       {
         index: true,
@@ -56,7 +63,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/doctor",
-    element: <LayoutDoctor />,
+    element: (
+      <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ROLE_DOCTOR"]}>
+        <LayoutDoctor />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorPage/>,
     children: [
       {
         index: true,
@@ -83,6 +95,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <LayoutPatient />,
+    errorElement: <ErrorPage/>,
     children: [
       {
         index: true,

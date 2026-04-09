@@ -56,6 +56,7 @@ public class SecurityConfig {
                     "/api/v1/files",
                     "/api/v1/webhook/**"
                 ).permitAll()
+
                 .anyRequest().authenticated()
                 // .anyRequest().permitAll()
             )
