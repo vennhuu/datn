@@ -173,5 +173,14 @@ public class AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch"))
                 .getStatus();
     }
+
+    public List<AppointmentResponseDTO> getDoneByDoctor(String email) {
+        User user = userRepository.findByEmail(email);
+        Doctor doctor = doctorRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        return appointmentRepository
+                .findByDoctorAndStatusOrderByAppointmentDateDesc(doctor, AppointmentStatus.DONE)
+                .stream().map(this::toDTO).toList();
+        }
     
 }

@@ -1,49 +1,58 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { MessageOutlined } from "@ant-design/icons";
 
-const DoctorSidebar = ({ doctor, selectedTime, onBook }) => (
-  <div style={{ position: "sticky", top: 24 }}>
-    <div style={s.card}>
-      <div style={s.titleRow}>
-        <span style={s.dot} />
-        <h3 style={s.title}>Địa chỉ khám</h3>
-      </div>
+const DoctorSidebar = ({ doctor, selectedTime, onBook }) => {
+  const navigate = useNavigate();
+  console.log("doctor:", doctor);
+  console.log("doctor.user:", doctor.user);
+  console.log("doctor.name:", doctor.name);
 
-      <Link to={`/hospital/${doctor.hospital?.id}`} style={s.hospitalName}>
-        {doctor.hospital?.name}
-      </Link>
-      <p style={s.address}>{doctor.hospital?.address}</p>
-
-      <div style={s.divider} />
-
-      <div style={s.priceRow}>
-        <span style={s.priceLabel}>Giá khám</span>
-        <span style={s.price}>
-          {doctor.price ? `${Number(doctor.price).toLocaleString("vi-VN")}đ` : "Liên hệ"}
-        </span>
-      </div>
-
-      {selectedTime && (
-        <div style={s.selectedSlot}>
-          🕐 Giờ đã chọn: <strong>{selectedTime}</strong>
+  return (
+    <div style={{ position: "sticky", top: 24 }}>
+      <div style={s.card}>
+        <div style={s.titleRow}>
+          <span style={s.dot} />
+          <h3 style={s.title}>Địa chỉ khám</h3>
         </div>
-      )}
 
-      <div style={s.divider} />
+        <Link to={`/hospital/${doctor.hospital?.id}`} style={s.hospitalName}>
+          {doctor.hospital?.name}
+        </Link>
+        <p style={s.address}>{doctor.hospital?.address}</p>
 
-      {/* <button
-        disabled={!selectedTime}
-        onClick={onBook}
-        style={{ ...s.btn, ...(!selectedTime ? s.btnDisabled : {}) }}
-      >
-        Đặt lịch ngay
-      </button> */}
+        <div style={s.divider} />
 
-      {!selectedTime && (
-        <p style={s.hint}>Vui lòng chọn giờ khám bên trái</p>
-      )}
+        <div style={s.priceRow}>
+          <span style={s.priceLabel}>Giá khám</span>
+          <span style={s.price}>
+            {doctor.price ? `${Number(doctor.price).toLocaleString("vi-VN")}đ` : "Liên hệ"}
+          </span>
+        </div>
+
+        {selectedTime && (
+          <div style={s.selectedSlot}>
+            🕐 Giờ đã chọn: <strong>{selectedTime}</strong>
+          </div>
+        )}
+
+        <div style={s.divider} />
+
+        {/* Nút nhắn tin */}
+        <button
+          onClick={() => navigate(`/chat?doctorId=${doctor.id}&doctorName=${encodeURIComponent(doctor.name)}&doctorAvatar=${doctor.avatar}`)}
+          style={s.chatBtn}
+        >
+          <MessageOutlined style={{ marginRight: 8 }} />
+          Nhắn tin với bác sĩ
+        </button>
+
+        {!selectedTime && (
+          <p style={s.hint}>Vui lòng chọn giờ khám bên trái</p>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const s = {
   card: {
@@ -63,12 +72,14 @@ const s = {
     marginTop: 12, padding: "10px 14px", background: "#eef4ff",
     borderRadius: 10, fontSize: 13, color: "#0a6abf",
   },
-  btn: {
+  chatBtn: {
     width: "100%", padding: "12px 0", borderRadius: 12,
-    background: "#0a6abf", color: "#fff", border: "none",
-    fontSize: 15, fontWeight: 700, cursor: "pointer", marginTop: 4,
+    background: "#fff", color: "#0a6abf",
+    border: "2px solid #0a6abf",
+    fontSize: 15, fontWeight: 700, cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    marginBottom: 10,
   },
-  btnDisabled: { background: "#e2e8f0", color: "#94a3b8", cursor: "not-allowed" },
   hint: { textAlign: "center", fontSize: 12, color: "#94a3b8", margin: "8px 0 0" },
 };
 

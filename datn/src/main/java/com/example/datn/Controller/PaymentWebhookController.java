@@ -31,25 +31,15 @@ public class PaymentWebhookController {
             @RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestHeader(value = "X-API-Key", required = false) String apiKeyHeader) {
 
-        System.out.println("\n=== [SEPAY WEBHOOK] NHẬN ĐƯỢC YÊU CẦU ===");
-        System.out.println("Authorization : " + authHeader);
-        System.out.println("X-API-Key     : " + apiKeyHeader);
-        System.out.println("Payload       : " + payload);
-
         try {
             String content = String.valueOf(payload.get("content"));
             String transferType = String.valueOf(payload.get("transferType"));
 
-            System.out.println("Transfer Type : " + transferType);
-            System.out.println("Content       : " + content);
-
             if (!"in".equals(transferType)) {
-                System.out.println("→ Ignored (không phải tiền vào)");
                 return ResponseEntity.ok(Map.of("success", true, "message", "Ignored"));
             }
 
             if (content == null || !content.toUpperCase().contains("KHAM")) {
-                System.out.println("⚠️ Không tìm thấy từ khóa KHAM");
                 return ResponseEntity.ok(Map.of("success", true, "message", "No KHAM keyword"));
             }
 
@@ -60,19 +50,15 @@ public class PaymentWebhookController {
 
             if (matcher.find()) {
                 long orderCode = Long.parseLong(matcher.group(1));
-                System.out.println("✅ TÌM THẤY ORDER CODE: " + orderCode);
 
                 appointmentService.confirmByOrderCode(orderCode);
 
-                System.out.println("🎉 XÁC NHẬN LỊCH THÀNH CÔNG!");
                 return ResponseEntity.ok(Map.of("success", true, "message", "Confirmed"));
             } else {
-                System.out.println("❌ Không extract được orderCode");
                 return ResponseEntity.ok(Map.of("success", true, "message", "Cannot extract orderCode"));
             }
 
         } catch (Exception e) {
-            System.err.println("❌ Webhook Exception: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.ok(Map.of("success", false, "message", "Error: " + e.getMessage()));
         }

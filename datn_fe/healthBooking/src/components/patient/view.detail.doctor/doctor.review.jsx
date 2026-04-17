@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { Rate, Avatar, message } from "antd";
-import { UserOutlined, SendOutlined } from "@ant-design/icons";
-import { createReviewAPI, getReviewsByDoctorAPI } from "../../../services/api.service.review";
+import { Rate, Avatar, message, Popconfirm } from "antd";
+import { UserOutlined, SendOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  createReviewAPI,
+  getReviewsByDoctorAPI,
+  deleteReviewAPI,
+} from "../../../services/api.service.review";
 
 const DoctorReview = ({ doctorId }) => {
   const [reviews, setReviews] = useState([]);
@@ -10,7 +14,18 @@ const DoctorReview = ({ doctorId }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
 
-  useEffect(() => { loadReviews(); }, [doctorId]);
+  // Lấy userId của người dùng đang đăng nhập
+  // Tuỳ dự án bạn lưu ở localStorage, context, redux...
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUserId = currentUser?.id;
+
+  console.log("currentUser:", currentUser);
+  console.log("currentUserId:", currentUserId);
+  console.log("reviews[0].userId:", reviews[0]?.userId);
+
+  useEffect(() => { 
+    loadReviews(); 
+  }, [doctorId]);
 
   const loadReviews = async () => {
     setLoading(true);
@@ -20,24 +35,29 @@ const DoctorReview = ({ doctorId }) => {
   };
 
   const handleSubmit = async () => {
-    if (!comment.trim()) {
-      message.warning("Vui lòng nhập nhận xét");
-      return;
-    }
+    if (!comment.trim()) { message.warning("Vui lòng nhập nhận xét"); return; }
     setSubmitting(true);
     const res = await createReviewAPI({ doctorId, rating, comment });
     if (res?.data) {
       message.success("Cảm ơn bạn đã đánh giá!");
-      setComment("");
-      setRating(5);
-      loadReviews();
+      setComment(""); setRating(5); loadReviews();
     } else {
       message.error(res?.message || "Bạn đã đánh giá bác sĩ này rồi");
     }
     setSubmitting(false);
   };
 
-  // Tính trung bình rating
+  // ✅ Hàm xóa
+  const handleDelete = async (reviewId) => {
+    const res = await deleteReviewAPI(reviewId);
+    if (res?.status === 200) {
+      message.success("Đã xóa đánh giá");
+      loadReviews();
+    } else {
+      message.error("Xóa thất bại");
+    }
+  };
+
   const avgRating = reviews.length
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null;
@@ -52,14 +72,12 @@ const DoctorReview = ({ doctorId }) => {
 
   return (
     <div style={s.wrap}>
-      {/* Title */}
       <div style={s.titleRow}>
         <span style={s.dot} />
         <h3 style={s.title}>Đánh giá & Nhận xét</h3>
         <span style={s.count}>{reviews.length} đánh giá</span>
       </div>
 
-      {/* Summary */}
       {reviews.length > 0 && (
         <div style={s.summary}>
           <div style={s.avgBlock}>
@@ -81,7 +99,6 @@ const DoctorReview = ({ doctorId }) => {
         </div>
       )}
 
-      {/* Write review */}
       <div style={s.writeBox}>
         <div style={s.writeTitle}>Viết đánh giá của bạn</div>
         <Rate value={rating} onChange={setRating} style={{ marginBottom: 12 }} />
@@ -104,7 +121,6 @@ const DoctorReview = ({ doctorId }) => {
         </div>
       </div>
 
-      {/* Review list */}
       <div style={s.list}>
         {loading ? (
           [1, 2].map((i) => <div key={i} style={s.skeleton} />)
@@ -125,6 +141,19 @@ const DoctorReview = ({ doctorId }) => {
                 <div style={s.reviewTop}>
                   <span style={s.reviewName}>{r.userName}</span>
                   <Rate disabled value={r.rating} style={{ fontSize: 12 }} />
+
+                  {currentUserId && String(r.userId) === String(currentUserId) && (
+                    <Popconfirm
+                      title="Xóa đánh giá này?"
+                      onConfirm={() => handleDelete(r.id)}
+                      okText="Xóa"
+                      cancelText="Hủy"
+                    >
+                      <button style={s.deleteBtn}>
+                        <DeleteOutlined />
+                      </button>
+                    </Popconfirm>
+                  )}
                 </div>
                 <p style={s.reviewComment}>{r.comment}</p>
               </div>
@@ -193,6 +222,17 @@ const s = {
   reviewTop: { display: "flex", alignItems: "center", gap: 12, marginBottom: 6 },
   reviewName: { fontSize: 14, fontWeight: 600, color: "#0f172a" },
   reviewComment: { fontSize: 14, color: "#475569", lineHeight: 1.7, margin: 0 },
+  deleteBtn: {
+    marginLeft: "auto",
+    background: "none",
+    border: "none",
+    color: "#ef4444",
+    cursor: "pointer",
+    fontSize: 14,
+    padding: "2px 6px",
+    borderRadius: 6,
+    transition: "background .2s",
+  },
 };
 
 export default DoctorReview;

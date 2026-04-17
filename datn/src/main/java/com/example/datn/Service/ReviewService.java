@@ -56,10 +56,22 @@ public class ReviewService {
     private ReviewResponseDTO toDTO(Review r) {
         return ReviewResponseDTO.builder()
                 .id(r.getId())
+                .userId(r.getUser().getId()) 
                 .userName(r.getUser().getName())
                 .userAvatar(r.getUser().getAvatar())
                 .rating(r.getRating())
                 .comment(r.getComment())
                 .build();
+    }
+
+    public void delete(Long reviewId, String email) {
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new RuntimeException("Không thấy bình luận này"));
+
+        if (!review.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Bạn không có quyền xóa đánh giá này");
+        }
+
+        reviewRepository.deleteById(reviewId);
     }
 }

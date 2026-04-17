@@ -32,6 +32,7 @@ import 'nprogress/nprogress.css'
 import OAuth2Callback from './pages/auth/OAuth2Callback.jsx'
 import ErrorPage from './pages/auth/error.jsx'
 import ProtectedRoute from './components/protected.route.jsx'
+import Chat from './pages/patient/chat.jsx'
 
 const router = createBrowserRouter([
   {
@@ -129,6 +130,10 @@ const router = createBrowserRouter([
         path: "/appointmenthistory",
         element: <AppointmentHistory />
       },
+      {
+        path: "/chat" , 
+        element: <Chat/>
+      }
     ]
   },
   {

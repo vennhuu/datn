@@ -18,4 +18,8 @@
 
         public Optional<Doctor> findByUser(User user);
 
+        Optional<Doctor> findByUserEmail(String email);
+
+        List<Doctor> findByHospitalId(Long id);
+
     }

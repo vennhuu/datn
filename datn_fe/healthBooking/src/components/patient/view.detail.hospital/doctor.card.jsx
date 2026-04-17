@@ -29,7 +29,7 @@ const DoctorCard = ({ doc }) => {
             <EnvironmentOutlined style={{ color: "#0a6abf", fontSize: 13 }} />
             <span style={s.addressText}>{doc.hospitalName || "Hà Nội"}</span>
           </div>
-          <Link to={`/doctor/${doc.id}`}>
+          <Link to={`/doctors/${doc.id}`}>
             <button style={s.detailBtn}>
               Xem hồ sơ <ArrowRightOutlined style={{ fontSize: 11 }} />
             </button>
@@ -65,12 +65,15 @@ const DoctorCard = ({ doc }) => {
           Giá khám: <span style={s.priceNum}>{doc.price ? `${Number(doc.price).toLocaleString("vi-VN")}đ` : "Liên hệ"}</span>
         </div>
 
+        <Link to={`/doctors/${doc.id}`}>
         <button
-          disabled={!selectedTime}
+          // disabled={!selectedTime}
           style={{ ...s.bookBtn, ...(selectedTime ? {} : s.bookBtnDisabled) }}
         >
           Đặt lịch ngay
+          
         </button>
+        </Link>
       </div>
     </div>
   );
@@ -142,7 +145,7 @@ const s = {
     background: "#0a6abf", color: "#fff", border: "none",
     fontSize: 14, fontWeight: 700, cursor: "pointer",
   },
-  bookBtnDisabled: { background: "#e2e8f0", color: "#94a3b8", cursor: "not-allowed" },
+  bookBtnDisabled: { background: "#e2e8f0", color: "#0a6abf" },
 };
 
 export default DoctorListByHospitalId;

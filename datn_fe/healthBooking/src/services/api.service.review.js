@@ -6,4 +6,7 @@ const getReviewsByDoctorAPI = (doctorId) =>
 const createReviewAPI = (data) =>
     axios.post("/api/v1/reviews", data);
 
-export { getReviewsByDoctorAPI, createReviewAPI };
+const deleteReviewAPI = (reviewId) =>
+    axios.delete(`/api/v1/reviews/${reviewId}`);
+
+export { getReviewsByDoctorAPI, createReviewAPI , deleteReviewAPI };

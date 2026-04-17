@@ -31,8 +31,14 @@ const getBookedSlotsAPI = (doctorId, date) =>
 const getAppointmentStatusAPI = (id) =>
     axios.get(`/api/v1/appointments/${id}/status`);
 
+
+const getDonePatientsAPI = () => axios.get("/api/v1/appointments/doctor/done");
+
+const sendMedicalRecordAPI = (data) =>
+    axios.post("/api/v1/medical-records/send", data);
+
 export {
     createAppointmentAPI, getMyAppointmentsAPI, cancelAppointmentAPI,
     getDoctorAppointmentsAPI, confirmAppointmentAPI, doneAppointmentAPI,
-    getBookedSlotsAPI, getAppointmentStatusAPI,
+    getBookedSlotsAPI, getAppointmentStatusAPI, getDonePatientsAPI , sendMedicalRecordAPI
 };

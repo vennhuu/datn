@@ -39,4 +39,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         String timeSlot,
         List<AppointmentStatus> statuses
     );
+
+    List<Appointment> findByDoctorAndStatusOrderByAppointmentDateDesc(Doctor doctor, AppointmentStatus status);
 }

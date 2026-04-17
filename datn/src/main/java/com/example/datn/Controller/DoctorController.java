@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import com.example.datn.Domain.request.ReqCreateDoctor;
 import com.example.datn.Domain.request.ReqUpdateDoctor;
 import com.example.datn.Domain.response.doctor.ResDoctor;
 import com.example.datn.Domain.response.pagination.ResPageResultDTO;
+import com.example.datn.Repository.DoctorRepository;
 import com.example.datn.Service.DoctorService;
 import com.example.datn.Service.HospitalService;
 import com.example.datn.Service.UserService;
@@ -37,11 +39,13 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final UserService userService ;
     private final HospitalService hospitalService ;
+    private final DoctorRepository doctorRepository;
 
-    public DoctorController(DoctorService doctorService , UserService userService , HospitalService hospitalService) {
+    public DoctorController(DoctorService doctorService , UserService userService , HospitalService hospitalService , DoctorRepository doctorRepository) {
         this.doctorService = doctorService;
         this.userService = userService ;
         this.hospitalService = hospitalService ;
+        this.doctorRepository = doctorRepository ;
     }
 
     // CREATE
@@ -121,5 +125,25 @@ public class DoctorController {
         }
         return ResponseEntity.ok(this.doctorService.findByHospitalId(id));
     }
-    
+
+    // GET profile của bác sĩ đang đăng nhập
+    @GetMapping("/doctors/profile/me")
+    @APIMessage("Get my profile")
+    public ResponseEntity<ResDoctor> getMyProfile() throws InvalidException {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Doctor doctor = doctorRepository.findByUserEmail(email)
+            .orElseThrow(() -> new InvalidException("Không tìm thấy hồ sơ"));
+        return ResponseEntity.ok(doctorService.getDoctorById(doctor.getId()));
+    }
+
+    // UPDATE profile của bác sĩ đang đăng nhập
+    @PutMapping("/doctors/profile/me")
+    @APIMessage("Update my profile")
+    public ResponseEntity<ResDoctor> updateMyProfile(@RequestBody ReqUpdateDoctor req) throws InvalidException {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Doctor doctor = doctorRepository.findByUserEmail(email)
+            .orElseThrow(() -> new InvalidException("Không tìm thấy hồ sơ"));
+        return ResponseEntity.ok(doctorService.updateDoctor(doctor.getId(), req));
+    }
+
 }

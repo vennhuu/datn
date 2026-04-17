@@ -87,4 +87,10 @@ public class AppointmentController {
         AppointmentStatus status = appointmentService.getStatus(id);
         return ResponseEntity.ok(Map.of("status", status.name()));
     }
+
+    @GetMapping("/doctor/done")
+    public ResponseEntity<?> getDonePatients() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(appointmentService.getDoneByDoctor(email));
+    }
 }

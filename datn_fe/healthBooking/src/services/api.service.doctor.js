@@ -98,4 +98,35 @@ const fetchDoctorByIdAPI = (id) => {
 const fetchAllDoctorByHospitalIdAPI = (id) => {
     return axios.get(`/api/v1/by-hospital/${id}`);
 }
-export {  fetchAllDoctorAPI , createNewDoctorAPI , updateDoctorAPI , deleteDoctorAPI , updateDoctorAvatarAPI , fetchDoctorByIdAPI , fetchAllDoctorByHospitalIdAPI} ;
+// Lấy profile bác sĩ đang đăng nhập
+const getDoctorProfileAPI = () => {
+    return axios.get("/api/v1/doctors/profile/me");
+};
+
+// Cập nhật profile bác sĩ đang đăng nhập
+const updateDoctorProfileAPI = (data) => {
+    return axios.put("/api/v1/doctors/profile/me", data);
+};
+
+// Upload avatar bác sĩ (dùng lại flow cũ: upload file → lấy tên → gọi updateDoctorAvatarAPI)
+const uploadDoctorAvatarAPI = async (formData) => {
+    // Upload file lên storage trước
+    const uploadRes = await axios.post("/api/v1/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+    const avatarFileName = uploadRes?.data?.fileName || uploadRes?.fileName;
+
+    // Lấy userId từ localStorage
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    
+    // Gọi API cập nhật avatar
+    await updateDoctorAvatarAPI(user.id, avatarFileName);
+    
+    return { data: { avatar: avatarFileName } };
+};
+
+export { 
+    fetchAllDoctorAPI, createNewDoctorAPI, updateDoctorAPI, deleteDoctorAPI, 
+    updateDoctorAvatarAPI, fetchDoctorByIdAPI, fetchAllDoctorByHospitalIdAPI,
+    getDoctorProfileAPI, updateDoctorProfileAPI, uploadDoctorAvatarAPI // ✅ export mới
+};

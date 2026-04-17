@@ -54,18 +54,22 @@ public class SecurityConfig {
                     "/api/v1/auth/refresh" ,
                     "/api/v1/auth/**",
                     "/api/v1/files",
-                    "/api/v1/webhook/**"
+                    "/api/v1/webhook/**",
+                    "/ws/**",                          // WebSocket endpoint
+                    "/api/v1/messages/**" 
                 ).permitAll()
 
                 .anyRequest().authenticated()
                 // .anyRequest().permitAll()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
+            .oauth2ResourceServer((oauth2) -> oauth2
+                .jwt(Customizer.withDefaults())
                 .authenticationEntryPoint(customAuthenticationEntryPoint))
             .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                .successHandler(oAuth2SuccessHandler)
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService))
+                    .successHandler(oAuth2SuccessHandler)
             );
 
         return http.build();

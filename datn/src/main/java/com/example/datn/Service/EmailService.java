@@ -46,4 +46,24 @@ public class EmailService {
         );
         mailSender.send(message);
     }
+
+    public void sendMedicalRecord(String toEmail, String patientName,
+            String doctorName, String date, String diagnosis,
+            String symptoms, String prescription, String notes, String revisitDate) {
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(toEmail);
+        mail.setSubject("Bệnh án sau khám - " + date);
+        mail.setText(
+            "Xin chào " + patientName + ",\n\n" +
+            "Bác sĩ " + doctorName + " đã gửi bệnh án ngày " + date + ":\n\n" +
+            "🔹 Chẩn đoán: " + diagnosis + "\n" +
+            "🔹 Triệu chứng: " + (symptoms != null ? symptoms : "—") + "\n" +
+            "🔹 Đơn thuốc: " + (prescription != null ? prescription : "—") + "\n" +
+            "🔹 Ghi chú: " + (notes != null ? notes : "—") + "\n" +
+            "🔹 Ngày tái khám: " + (revisitDate != null ? revisitDate : "Không có") + "\n\n" +
+            "Chúc bạn mau khỏe!\nPhuocBooking"
+        );
+        mailSender.send(mail);
+    }
 }

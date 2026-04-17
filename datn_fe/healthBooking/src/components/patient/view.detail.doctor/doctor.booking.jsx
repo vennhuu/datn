@@ -12,7 +12,6 @@ const SCHEDULES = [
   "13:30", "14:00", "14:30", "15:00", "15:30",
 ];
 
-// ✅ Thay bằng thông tin BIDV của bạn
 const BANK_ID = "BIDV";
 const ACCOUNT_NO = "5315966788";
 const ACCOUNT_NAME = "PHAN HUU PHUOC";

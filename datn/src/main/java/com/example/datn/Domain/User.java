@@ -95,4 +95,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
+
+    @OneToMany(mappedBy = "patient")
+    private List<MedicalRecord> medicalRecords;
 }

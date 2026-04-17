@@ -9,6 +9,14 @@ const HeaderHomepage = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [openMenu, setOpenMenu] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -17,9 +25,13 @@ const HeaderHomepage = () => {
 
   useEffect(() => {
     if (location?.pathname) {
-      const allRoutes = ["home", "doctors", "specialization", "hospital"];
-      const currentRoute = allRoutes.find((r) => `/${r}` === location.pathname);
-      setCurrent(currentRoute || "home");
+      const allRoutes = ["home", "doctors", "specialization", "hospital", "chat"];
+      const currentRoute = allRoutes.find((r) => 
+        r === "home" 
+          ? location.pathname === "/"
+          : location.pathname.startsWith(`/${r}`)
+      );
+      setCurrent(currentRoute || "");
     }
   }, [location]);
 
@@ -37,6 +49,7 @@ const HeaderHomepage = () => {
     { key: "doctors", label: "Bác sĩ", to: "/doctors" },
     { key: "specialization", label: "Chuyên khoa", to: "/specialization" },
     { key: "hospital", label: "Bệnh viện", to: "/hospital" },
+    { key: "chat" , label: "Nhắn tin", to: "/chat"}
   ];
 
   const dropdownItems = [
@@ -54,21 +67,35 @@ const HeaderHomepage = () => {
         <span style={styles.logoText}>PhuocBooking</span>
       </Link>
 
+      {isMobile && (
+        <Button onClick={() => setOpenMenu(!openMenu)}>
+          ☰
+        </Button>
+      )}
+
       {/* Nav */}
-      <nav style={styles.nav}>
-        {navLinks.map((link) => (
-          <Link
-            key={link.key}
-            to={link.to}
-            style={{
-              ...styles.navLink,
-              ...(current === link.key ? styles.navLinkActive : {}),
-            }}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+      {(!isMobile || openMenu) && (
+        <nav
+          style={{
+            ...styles.nav,
+            ...(isMobile ? styles.navMobile : {}),
+          }}
+        >
+          {navLinks.map((link) => (
+            <Link
+              key={link.key}
+              to={link.to}
+              onClick={() => setOpenMenu(false)}
+              style={{
+                ...styles.navLink,
+                ...(current === link.key ? styles.navLinkActive : {}),
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      )}
 
       {/* Right */}
       <div style={styles.right}>
@@ -185,6 +212,16 @@ const styles = {
     fontWeight: 600,
     fontSize: 14,
     padding: "0 20px",
+  },
+  navMobile: {
+    position: "absolute",
+    top: 70,
+    left: 0,
+    width: "100%",
+    background: "white",
+    flexDirection: "column",
+    padding: 16,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
   },
 };
 
