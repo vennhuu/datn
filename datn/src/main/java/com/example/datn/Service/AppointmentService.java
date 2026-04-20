@@ -1,7 +1,9 @@
 package com.example.datn.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -35,14 +37,14 @@ public class AppointmentService {
         User patient = userRepository.findByEmail(email);
 
         Doctor doctor = doctorRepository.findById(dto.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
 
         boolean conflict = appointmentRepository
                 .existsByDoctorAndAppointmentDateAndTimeSlotAndStatusIn(
                         doctor,
                         dto.getAppointmentDate(),
                         dto.getTimeSlot(),
-                        List.of(AppointmentStatus.CONFIRMED, AppointmentStatus.DONE) // ✅ Bỏ PENDING
+                        List.of(AppointmentStatus.CONFIRMED, AppointmentStatus.DONE)
                 );
         if (conflict) throw new RuntimeException("Khung giờ này đã được đặt");
 
@@ -139,8 +141,8 @@ public class AppointmentService {
                 .stream()
                 .map(Appointment::getTimeSlot)
                 .toList();
-        }
-        public void confirmByOrderCode(long orderCode) {
+    }
+    public void confirmByOrderCode(long orderCode) {
         Appointment apt = appointmentRepository.findByOrderCode(orderCode)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch với orderCode: " + orderCode));
 
@@ -180,6 +182,20 @@ public class AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
         return appointmentRepository
                 .findByDoctorAndStatusOrderByAppointmentDateDesc(doctor, AppointmentStatus.DONE)
+                .stream().map(this::toDTO).toList();
+    }
+
+    public Map<String, Long> getStats() {
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("CONFIRMED",  appointmentRepository.countByStatus(AppointmentStatus.CONFIRMED));
+        stats.put("PENDING",    appointmentRepository.countByStatus(AppointmentStatus.PENDING));
+        stats.put("DONE",       appointmentRepository.countByStatus(AppointmentStatus.DONE));
+        stats.put("CANCELLED",  appointmentRepository.countByStatus(AppointmentStatus.CANCELLED));
+        return stats;
+    }
+
+        public List<AppointmentResponseDTO> getAll() {
+        return appointmentRepository.findAllByOrderByCreatedAtDesc()
                 .stream().map(this::toDTO).toList();
         }
     

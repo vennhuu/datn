@@ -94,5 +94,9 @@ public class HospitalService {
         }
         return null ;
     }
+
+    public long getTotalHospitals() {
+        return this.hospitalRepository.count();
+    }
     
 }

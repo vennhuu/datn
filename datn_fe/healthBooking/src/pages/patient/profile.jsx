@@ -14,7 +14,7 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { updateUploadUserAvatarAPI, updateUserAPI, updateUserAvatarAPI } from "../../services/api.service.user";
+import { fetchUserByIdAPI, updateUploadUserAvatarAPI, updateUserAPI, updateUserAvatarAPI } from "../../services/api.service.user";
 
 const { Option } = Select;
 
@@ -27,16 +27,32 @@ const Profile = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
+      const stored = localStorage.getItem("user");
+      if (!stored) return;
+      
       const parsed = JSON.parse(stored);
-      setUser(parsed);
-      setPreviewAvatar(
-        parsed.avatar
-          ? `${import.meta.env.VITE_BACKEND_URL}/storage/avt_patient/${parsed.avatar}`
-          : null
-      );
-    }
+      
+      // Fetch full profile từ server
+      fetchUserByIdAPI(parsed.id).then((res) => {
+          if (res?.data) {
+              const fullUser = { ...parsed, ...res.data };
+              localStorage.setItem("user", JSON.stringify(fullUser)); // cập nhật lại
+              setUser(fullUser);
+              setPreviewAvatar(
+                  fullUser.avatar
+                      ? `${import.meta.env.VITE_BACKEND_URL}/storage/avt_patient/${fullUser.avatar}`
+                      : null
+              );
+          } else {
+              // Fallback nếu API lỗi
+              setUser(parsed);
+              setPreviewAvatar(
+                  parsed.avatar
+                      ? `${import.meta.env.VITE_BACKEND_URL}/storage/avt_patient/${parsed.avatar}`
+                      : null
+              );
+          }
+      });
   }, []);
 
   const handleEditClick = () => {

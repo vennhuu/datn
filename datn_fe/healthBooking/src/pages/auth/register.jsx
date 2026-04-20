@@ -33,43 +33,43 @@ const Register = () => {
     };
 
     const handleVerify = async () => {
-    setLoadingVerify(true);
-    try {
-        await verifyCodeAPI(pendingValues.email, verifyCode);
+        setLoadingVerify(true);
+        try {
+            await verifyCodeAPI(pendingValues.email, verifyCode);
 
-        let avatarUrl = "";
-        const fileList = pendingValues.avatar?.fileList ?? [];
-        const file = fileList[0]?.originFileObj;
+            let avatarUrl = "";
+            const fileList = pendingValues.avatar?.fileList ?? [];
+            const file = fileList[0]?.originFileObj;
 
-        if (file) {
-            const uploadRes = await updateUserAvatarAPI(file, "avt_patient");
-            avatarUrl = uploadRes?.data?.fileName || "";
+            if (file) {
+                const uploadRes = await updateUserAvatarAPI(file, "avt_patient");
+                avatarUrl = uploadRes?.data?.fileName || "";
+            }
+
+            const registerRes = await registerUserAPI(
+                pendingValues.name,
+                pendingValues.email,
+                pendingValues.password,
+                pendingValues.gender,
+                pendingValues.mobile,
+                pendingValues.birthday?.toISOString(),
+                pendingValues.address,
+                avatarUrl
+            );
+
+            notification.success({ message: "Đăng kí thành công!" });
+            setIsModalOpen(false);
+            window.location.href = "/login";
+
+        } catch (error) {
+            notification.error({
+                message: "Xác thực thất bại",
+                description: error?.response?.data?.message || error?.message || "Mã không đúng hoặc đã hết hạn",
+            });
+        } finally {
+            setLoadingVerify(false);
         }
-
-        // const registerRes = await registerUserAPI(
-        //     pendingValues.name,
-        //     pendingValues.email,
-        //     pendingValues.password,
-        //     pendingValues.gender,
-        //     pendingValues.mobile,
-        //     pendingValues.birthday?.toISOString(),
-        //     pendingValues.address,
-        //     avatarUrl
-        // );
-
-        notification.success({ message: "Đăng kí thành công!" });
-        setIsModalOpen(false);
-        window.location.href = "/login";
-
-    } catch (error) {
-        notification.error({
-            message: "Xác thực thất bại",
-            description: error?.response?.data?.message || error?.message || "Mã không đúng hoặc đã hết hạn",
-        });
-    } finally {
-        setLoadingVerify(false);
-    }
-};
+    };
 
     return (
         <div style={{

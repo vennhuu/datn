@@ -125,4 +125,10 @@ public class UserController {
         return ResponseEntity.ok("Avatar updated");
     }
 
+    @GetMapping("/users/count")
+    @APIMessage("Count all patient")
+    public ResponseEntity<Long> totalUsers() {
+        return ResponseEntity.ok(this.userService.getTotalUsers("ROLE_USER"));
+    }
+
 }

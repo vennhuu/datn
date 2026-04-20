@@ -164,4 +164,8 @@ public class UserService {
         this.userRepository.save(user);
     }
 
+    public long getTotalUsers(String role) {
+        return this.userRepository.countByRole_Name(role) ;
+    }
+
 }

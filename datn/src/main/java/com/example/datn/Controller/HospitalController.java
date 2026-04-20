@@ -104,4 +104,10 @@ public class HospitalController {
 
         return ResponseEntity.ok("Avatar updated");
     }
+
+    @GetMapping("/hospitals/count")
+    @APIMessage("Count all hospitals")
+    public ResponseEntity<Long> totalHospitals() {
+        return ResponseEntity.ok(this.hospitalService.getTotalHospitals());
+    }
 }

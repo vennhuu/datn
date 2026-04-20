@@ -93,4 +93,14 @@ public class AppointmentController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok(appointmentService.getDoneByDoctor(email));
     }
+
+    @GetMapping("/stats")
+    public ResponseEntity<?> getStats() {
+        return ResponseEntity.ok(appointmentService.getStats());
+    }
+
+    @GetMapping("/admin/all")
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(appointmentService.getAll());
+    }
 }

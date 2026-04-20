@@ -54,7 +54,7 @@ const DoctorCard = ({ doctor }) => {
 
         <button
           style={styles.bookBtn}
-          onClick={() => navigate(`/doctor/${doctor.id}`)}
+          onClick={() => navigate(`/doctors/${doctor.id}`)}
           onMouseEnter={(e) => (e.currentTarget.style.background = "#0858a0")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "#0a6abf")}
         >

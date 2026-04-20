@@ -146,4 +146,9 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.updateDoctor(doctor.getId(), req));
     }
 
+    @GetMapping("/doctors/count")
+    @APIMessage("Count all doctors")
+    public ResponseEntity<Long> totalDoctors() {
+        return ResponseEntity.ok(this.userService.getTotalUsers("ROLE_DOCTOR"));
+    }
 }

@@ -6,6 +6,8 @@ import { fetchAllDoctorByHospitalIdAPI } from "../../services/api.service.doctor
 import HospitalHeader from "../../components/patient/view.detail.hospital/header.view.detail.hospital";
 import HospitalIntro from "../../components/patient/view.detail.hospital/hospital.intro";
 import DoctorListByHospitalId from "../../components/patient/view.detail.hospital/doctor.card";
+import { useThemeTokens } from "../../context/themeTokens";
+
 
 
 const HospitalDetail = () => {
@@ -13,6 +15,7 @@ const HospitalDetail = () => {
   const [data, setData] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const t = useThemeTokens();
 
   useEffect(() => {
     const load = async () => {
@@ -32,7 +35,7 @@ const HospitalDetail = () => {
   if (!data) return <p style={{ padding: 40 }}>Không tìm thấy bệnh viện</p>;
 
   return (
-    <div style={{ background: "#f0f4f8", minHeight: "100vh", padding: "40px 80px" }}>
+    <div style={{ background: t.pageBg, minHeight: "100vh", padding: "40px 80px" }}>
       <HospitalHeader data={data} />
       <HospitalIntro introduction={data.introduction} />
       <DoctorListByHospitalId doctors={doctors} />

@@ -18,6 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByRefreshTokenAndEmail(String token, String email);
 
-    
-    
+    long countByRole_Name(String roleName);
 }

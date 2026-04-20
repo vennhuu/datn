@@ -93,9 +93,9 @@ const Sidebar = () => {
       {/* Logout */}
       <div style={s.bottom}>
         <button style={s.logoutBtn} onClick={handleLogout}>
-  <LogoutOutlined style={{ fontSize: 14 }} />
-  {!collapsed && "Đăng xuất"}
-</button>
+          <LogoutOutlined style={{ fontSize: 14 }} />
+          {!collapsed && "Đăng xuất"}
+        </button>
       </div>
     </Sider>
   );

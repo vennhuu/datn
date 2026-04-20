@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Filter from "../../components/patient/list.doctor/filter";
 import ListDoctors from "../../components/patient/list.doctor/list.doctor";
 import { fetchAllDoctorAPI } from "../../services/api.service.doctor";
+import { useThemeTokens } from "../../context/themeTokens";
 
 const DoctorList = () => {
   const [dataDoctor, setDataDoctor] = useState([]);
@@ -10,6 +11,7 @@ const DoctorList = () => {
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({});
   const [loading, setLoading] = useState(false);
+  const t = useThemeTokens();
 
   useEffect(() => {
     loadDoctor();
@@ -26,7 +28,7 @@ const DoctorList = () => {
   };
 
   return (
-    <div style={s.page}>
+    <div style={{ ...s.page, background: t.pageBg }}>
       {/* Page header */}
       <div style={s.pageHeader}>
         <h1 style={s.pageTitle}>Tìm kiếm bác sĩ</h1>

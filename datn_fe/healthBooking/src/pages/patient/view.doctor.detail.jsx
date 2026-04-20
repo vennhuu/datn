@@ -7,12 +7,14 @@ import DoctorBooking from "../../components/patient/view.detail.doctor/doctor.bo
 import DoctorInfo from "../../components/patient/view.detail.doctor/doctor.infor";
 import DoctorSidebar from "../../components/patient/view.detail.doctor/doctor.sidebar";
 import DoctorReview from "../../components/patient/view.detail.doctor/doctor.review";
+import { useThemeTokens } from "../../context/themeTokens";
 
 const DoctorDetail = () => {
   const { id } = useParams();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTime, setSelectedTime] = useState(null);
+  const t = useThemeTokens();
 
   useEffect(() => {
     const fetch = async () => {
@@ -30,7 +32,7 @@ const DoctorDetail = () => {
   if (!doctor) return <p style={{ padding: 40 }}>Không tìm thấy bác sĩ</p>;
 
   return (
-    <div style={{ background: "#f0f4f8", minHeight: "100vh", padding: "40px 80px" }}>
+    <div style={{ background: t.pageBg, minHeight: "100vh", padding: "40px 80px" }}>
       <DoctorHeader doctor={doctor} />
 
       <Row gutter={24} style={{ marginTop: 20 }}>

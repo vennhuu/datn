@@ -67,4 +67,10 @@ const updateUploadUserAvatarAPI = (id, avatar) => {
 
     return axios.put(URL_BACKEND, params)
 }
-export {createUserAPI , updateUserAPI , fetchAllUserAPI , deleteUserAPI , updateUserAvatarAPI , updateUploadUserAvatarAPI}
+
+const fetchUserByIdAPI = (id) => {
+    return axios.get(`/api/v1/users/${id}`);
+}
+
+export { createUserAPI, updateUserAPI, fetchAllUserAPI, deleteUserAPI, 
+         updateUserAvatarAPI, updateUploadUserAvatarAPI, fetchUserByIdAPI }
