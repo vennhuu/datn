@@ -52,6 +52,10 @@ public class AppointmentService {
         long orderCode = System.currentTimeMillis() % 100_000_000L;
         String paymentContent = "KHAM " + orderCode;
 
+        AppointmentStatus status = dto.getPaymentMethod().equals("CASH")
+        ? AppointmentStatus.CONFIRMED
+        : AppointmentStatus.PENDING;
+
         Appointment appointment = Appointment.builder()
                 .patient(patient)
                 .doctor(doctor)
@@ -59,7 +63,7 @@ public class AppointmentService {
                 .timeSlot(dto.getTimeSlot())
                 .note(dto.getNote())
                 .price(doctor.getPrice())
-                .status(AppointmentStatus.PENDING)
+                .status(status)
                 .orderCode(orderCode)
                 .paymentContent(paymentContent)
                 .build();

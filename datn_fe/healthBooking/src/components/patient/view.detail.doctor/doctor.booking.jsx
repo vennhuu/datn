@@ -6,6 +6,7 @@ import {
   getAppointmentStatusAPI,
 } from "../../../services/api.service.appointment";
 import dayjs from "dayjs";
+import { DollarOutlined, QrcodeOutlined } from "@ant-design/icons";
 
 const SCHEDULES = [
   "09:00", "09:30", "10:00", "10:30", "11:00",
@@ -25,8 +26,12 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
   const [currentAppointmentId, setCurrentAppointmentId] = useState(null);
   const [step, setStep] = useState(null); // null | "confirm" | "qr" | "success"
   const [waitingPayment, setWaitingPayment] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("CASH"); // "CASH" | "QR"
+  const [confirmedTime, setConfirmedTime] = useState(null);
 
-  const pollingRef = useRef(null); // dùng ref để clear interval chính xác
+  console.log("Giờ khám:" , selectedTime) 
+
+  const pollingRef = useRef(null);
 
   if (!doctor) return null;
 
@@ -34,7 +39,6 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
     loadBookedSlots();
   }, [selectedDate, doctor.id]);
 
-  // Cleanup polling khi unmount
   useEffect(() => {
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
@@ -51,8 +55,17 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
     onSelectTime(null);
   };
 
-  //Gọi API tạo lịch khi bấm "Tiếp tục thanh toán"
-  const handleCreateAppointment = async () => {
+  // Xử lý khi bấm "Tiếp tục" trong modal xác nhận
+  const handleContinue = async () => {
+    if (paymentMethod === "CASH") {
+      await handleCreateAppointment("CASH");
+    } else {
+      await handleCreateAppointment("QR");
+    }
+  };
+
+  // Gọi API tạo lịch — paymentType: "CASH" | "QR"
+  const handleCreateAppointment = async (paymentType) => {
     setLoading(true);
     try {
       const res = await createAppointmentAPI({
@@ -60,16 +73,27 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
         appointmentDate: selectedDate.format("YYYY-MM-DD"),
         timeSlot: selectedTime,
         note: note,
+        paymentMethod: paymentType,
       });
 
       if (res?.data) {
-        const appointmentId = res.data.id;
-        const content = res.data.paymentContent; // "KHAM 12345678"
+        if (paymentType === "CASH") {
+          // Tiền mặt → thành công ngay, không cần QR
+          setConfirmedTime(selectedTime);
+          setStep("success");
+          onSelectTime(null);
+          setNote("");
+          loadBookedSlots();
+        } else {
+          // QR → lấy paymentContent rồi hiện mã QR + bắt đầu polling
+          const appointmentId = res.data.id;
+          const content = res.data.paymentContent;
 
-        setCurrentAppointmentId(appointmentId);
-        setPaymentContent(content);
-        setStep("qr"); // chuyển sang bước QR
-        startPolling(appointmentId); // bắt đầu polling
+          setCurrentAppointmentId(appointmentId);
+          setPaymentContent(content);
+          setStep("qr");
+          startPolling(appointmentId);
+        }
       } else {
         message.error(res?.message || "Đặt lịch thất bại");
       }
@@ -80,7 +104,7 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
     }
   };
 
-  // Polling mỗi 3 giây để kiểm tra trạng thái thanh toán
+  // Polling mỗi 3 giây để kiểm tra trạng thái thanh toán QR
   const startPolling = (appointmentId) => {
     setWaitingPayment(true);
     console.log("🔄 Bắt đầu polling appointmentId:", appointmentId);
@@ -89,12 +113,13 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
       try {
         console.log("📡 Đang poll appointmentId:", appointmentId);
         const res = await getAppointmentStatusAPI(appointmentId);
-        console.log("Full res:", res);          // xem toàn bộ
-        console.log("res.data:", res?.data);    // xem data layer 1
-        
+        console.log("Full res:", res);
+        console.log("res.data:", res?.data);
+
         if (res?.data?.status === "CONFIRMED") {
           clearInterval(pollingRef.current);
           setWaitingPayment(false);
+          setConfirmedTime(selectedTime);
           setStep("success");
           onSelectTime(null);
           setNote("");
@@ -105,6 +130,7 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
       }
     }, 3000);
 
+    // Tự hết hạn sau 15 phút
     setTimeout(() => {
       clearInterval(pollingRef.current);
       setWaitingPayment(false);
@@ -117,15 +143,15 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
     setStep(null);
   };
 
-  // QR URL dùng paymentContent từ backend
   const qrAmount = doctor.price || 0;
-  // const qrUrl =
-  //   `https://img.vietqr.io/image/BIDV-${ACCOUNT_NO}-compact2.png` +
-  //   `?amount=${qrAmount}` +
-  //   `&addInfo=${encodeURIComponent(paymentContent)}` +
-  //   `&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+  const qrUrl = `https://qr.sepay.vn/img?acc=96247PHUOC&bank=BIDV&amount=${qrAmount}&des=${encodeURIComponent(paymentContent)}`;
 
-    const qrUrl = `https://qr.sepay.vn/img?acc=96247PHUOC&bank=BIDV&amount=${qrAmount}&des=${encodeURIComponent(paymentContent)}`
+  // Số bước hiển thị trên stepper tùy theo phương thức
+  const stepItems =
+    paymentMethod === "QR"
+      ? [{ title: "Xác nhận" }, { title: "Thanh toán QR" }, { title: "Hoàn tất" }]
+      : [{ title: "Xác nhận" }, { title: "Hoàn tất" }];
+
   return (
     <>
       {/* ===== CARD CHỌN LỊCH ===== */}
@@ -176,13 +202,13 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
         </button>
       </div>
 
-      {/* ===== STEP 1 — Xác nhận thông tin ===== */}
+      {/* ===== STEP 1 — Xác nhận + chọn phương thức thanh toán ===== */}
       <Modal
         title="Xác nhận thông tin"
         open={step === "confirm"}
-        onOk={handleCreateAppointment}
+        onOk={handleContinue}
         onCancel={() => setStep(null)}
-        okText="Tiếp tục thanh toán →"
+        okText={paymentMethod === "QR" ? "Tiếp tục thanh toán QR →" : "Xác nhận đặt lịch"}
         cancelText="Hủy"
         confirmLoading={loading}
         okButtonProps={{ style: { background: "#0a6abf" } }}
@@ -190,14 +216,15 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
         <Steps
           size="small"
           current={0}
-          items={[{ title: "Xác nhận" }, { title: "Thanh toán QR" }, { title: "Hoàn tất" }]}
+          items={stepItems}
           style={{ marginBottom: 20 }}
         />
 
         <div style={s.confirmContent}>
+          {/* Thông tin bác sĩ / lịch */}
           <div style={s.confirmRow}>
             <span style={s.confirmLabel}>Bác sĩ</span>
-            <span style={s.confirmValue}>{doctor.degree} {doctor.user?.name}</span>
+            <span style={s.confirmValue}>{doctor.name}</span>
           </div>
           <div style={s.confirmRow}>
             <span style={s.confirmLabel}>Ngày khám</span>
@@ -217,6 +244,37 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
                 : "Liên hệ"}
             </span>
           </div>
+
+          {/* Chọn phương thức thanh toán */}
+          <div style={{ marginTop: 20, marginBottom: 4 }}>
+            <p style={{ ...s.confirmLabel, marginBottom: 10 }}>Phương thức thanh toán</p>
+            <div style={s.methodGrid}>
+              <div
+                onClick={() => setPaymentMethod("CASH")}
+                style={{
+                  ...s.methodCard,
+                  ...(paymentMethod === "CASH" ? s.methodCardActive : {}),
+                }}
+              >
+                <span style={s.methodIcon}><DollarOutlined /></span>
+                <span style={s.methodLabel}>Tiền mặt</span>
+                <span style={s.methodSub}>Thanh toán tại quầy</span>
+              </div>
+              <div
+                onClick={() => setPaymentMethod("QR")}
+                style={{
+                  ...s.methodCard,
+                  ...(paymentMethod === "QR" ? s.methodCardActive : {}),
+                }}
+              >
+                <span style={s.methodIcon}><QrcodeOutlined /></span>
+                <span style={s.methodLabel}>Chuyển khoản QR</span>
+                <span style={s.methodSub}>Quét mã thanh toán ngay</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Ghi chú */}
           <div style={{ marginTop: 16 }}>
             <p style={s.confirmLabel}>Ghi chú (không bắt buộc)</p>
             <Input.TextArea
@@ -230,7 +288,7 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
         </div>
       </Modal>
 
-      {/* ===== STEP 2 — Thanh toán QR ===== */}
+      {/* ===== STEP 2 — Thanh toán QR (chỉ hiện khi chọn QR) ===== */}
       <Modal
         title="Quét mã QR để thanh toán"
         open={step === "qr"}
@@ -281,7 +339,6 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
             </div>
           </div>
 
-          {/* ✅ Trạng thái đang chờ thanh toán */}
           {waitingPayment && (
             <div style={s.waitingBox}>
               <Spin size="small" />
@@ -298,7 +355,7 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
         </div>
       </Modal>
 
-      {/* ===== STEP 3 — Hoàn tất ===== */}
+      {/* ===== STEP CUỐI — Hoàn tất ===== */}
       <Modal
         open={step === "success"}
         footer={null}
@@ -314,7 +371,7 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
           <div style={s.successInfo}>
             <div style={s.confirmRow}>
               <span style={s.confirmLabel}>Bác sĩ</span>
-              <span style={s.confirmValue}>{doctor.degree} {doctor.user?.name}</span>
+              <span style={s.confirmValue}>{doctor.name}</span>
             </div>
             <div style={s.confirmRow}>
               <span style={s.confirmLabel}>Ngày khám</span>
@@ -322,7 +379,13 @@ const DoctorBooking = ({ doctor, selectedTime, onSelectTime }) => {
             </div>
             <div style={s.confirmRow}>
               <span style={s.confirmLabel}>Giờ khám</span>
-              <span style={{ ...s.confirmValue, color: "#0a6abf" }}>{selectedTime}</span>
+              <span style={{ ...s.confirmValue, color: "#0a6abf" }}>{confirmedTime}</span>
+            </div>
+            <div style={s.confirmRow}>
+              <span style={s.confirmLabel}>Thanh toán</span>
+              <span style={{ ...s.confirmValue, color: "#16a34a" }}>
+                {paymentMethod === "CASH" ? "Tiền mặt tại quầy" : "Chuyển khoản QR"}
+              </span>
             </div>
             <div style={{ ...s.confirmRow, border: "none" }}>
               <span style={s.confirmLabel}>Số tiền</span>
@@ -373,6 +436,22 @@ const s = {
   },
   confirmLabel: { fontSize: 13, color: "#94a3b8" },
   confirmValue: { fontSize: 14, color: "#0f172a", fontWeight: 600 },
+
+  // Payment method selection
+  methodGrid: { display: "flex", gap: 10 },
+  methodCard: {
+    flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+    gap: 4, padding: "14px 10px", borderRadius: 12,
+    border: "1.5px solid #e2e8f0", background: "#f8fafc",
+    cursor: "pointer", transition: "all .15s",
+  },
+  methodCardActive: {
+    border: "1.5px solid #0a6abf", background: "#eff6ff",
+  },
+  methodIcon: { fontSize: 22 },
+  methodLabel: { fontSize: 13, fontWeight: 700, color: "#0f172a" },
+  methodSub: { fontSize: 11, color: "#94a3b8", textAlign: "center" },
+
   qrWrap: { display: "flex", flexDirection: "column", alignItems: "center", gap: 16 },
   qrImg: { width: 220, height: 220, borderRadius: 12, border: "1px solid #e2e8f0" },
   qrInfo: {

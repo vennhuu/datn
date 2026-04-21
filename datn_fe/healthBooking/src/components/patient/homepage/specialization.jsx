@@ -1,20 +1,21 @@
+import { Baby, Bone, Brain, Eye, FlaskConical, Heart, Scissors, Smile, Sparkles, Stethoscope, UtensilsCrossed, Wind, Ear } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const specializations = [
-  { name: "Tim mạch", emoji: "🫀" },
-  { name: "Thần kinh", emoji: "🧠" },
-  { name: "Cơ xương khớp", emoji: "🦴" },
-  { name: "Mắt", emoji: "👁️" },
-  { name: "Nhi khoa", emoji: "🍼" },
-  { name: "Sản phụ khoa", emoji: "🤰" },
-  { name: "Răng hàm mặt", emoji: "🦷" },
-  { name: "Hô hấp", emoji: "🫁" },
-  { name: "Nội tiết", emoji: "🧬" },
-  { name: "Nội tổng quát", emoji: "🩺" },
-  { name: "Ngoại khoa", emoji: "✂️" },
-  { name: "Da liễu", emoji: "🧴" },
-  { name: "Tâm lý", emoji: "💬" },
-  { name: "Tiêu hóa", emoji: "🔬" },
+  { name: "Tim mạch",      Icon: Heart          },
+  { name: "Thần kinh",     Icon: Brain          },
+  { name: "Cơ xương khớp", Icon: Bone           },
+  { name: "Mắt",           Icon: Eye            },
+  { name: "Nhi khoa",      Icon: Smile          },
+  { name: "Sản phụ khoa",  Icon: Baby           },
+  { name: "Tai mũi họng",  Icon: Ear            },
+  { name: "Hô hấp",        Icon: Wind           },
+  { name: "Nội tiết",      Icon: FlaskConical   },
+  { name: "Nội tổng quát", Icon: Stethoscope    },
+  { name: "Ngoại khoa",    Icon: Scissors       },
+  { name: "Da liễu",       Icon: Sparkles       },
+  { name: "Tâm lý",        Icon: Brain          },
+  { name: "Tiêu hóa",      Icon: UtensilsCrossed},
 ];
 
 const Specialization = () => {
@@ -22,7 +23,6 @@ const Specialization = () => {
 
   return (
     <section style={styles.section}>
-      {/* Section header */}
       <div style={styles.sectionHeader}>
         <div>
           <h2 style={styles.title}>
@@ -30,15 +30,11 @@ const Specialization = () => {
           </h2>
           <p style={styles.sub}>Tìm bác sĩ theo chuyên khoa phù hợp với bạn</p>
         </div>
-        <span
-          style={styles.seeAll}
-          onClick={() => navigate("/specialization")}
-        >
+        <span style={styles.seeAll} onClick={() => navigate("/specialization")}>
           Xem tất cả →
         </span>
       </div>
 
-      {/* Scrollable grid */}
       <div style={styles.scrollContainer}>
         {specializations.map((item, i) => (
           <div
@@ -48,13 +44,22 @@ const Specialization = () => {
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "#0a6abf";
               e.currentTarget.style.background = "#eef4ff";
+              e.currentTarget.querySelector(".card-icon")?.style && 
+                (e.currentTarget.querySelector(".card-icon").style.background = "#0a6abf");
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = "#e8edf3";
               e.currentTarget.style.background = "#fff";
+              e.currentTarget.querySelector(".card-icon")?.style &&
+                (e.currentTarget.querySelector(".card-icon").style.background = "#e8f0fb");
             }}
           >
-            <div style={styles.emoji}>{item.emoji}</div>
+            <div className="card-icon" style={styles.iconBox}>
+              {item.Icon
+                ? <item.Icon size={22} color="#0a6abf" strokeWidth={1.8} />
+                : <span style={{ fontSize: 22, lineHeight: 1 }}>{item.emoji}</span>
+              }
+            </div>
             <p style={styles.name}>{item.name}</p>
           </div>
         ))}
@@ -113,9 +118,16 @@ const styles = {
     transition: "border-color .15s, background .15s",
     flexShrink: 0,
   },
-  emoji: {
-    fontSize: 30,
-    marginBottom: 8,
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    background: "#e8f0fb",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto 10px",
+    transition: "background .15s",
   },
   name: {
     fontSize: 12,

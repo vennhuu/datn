@@ -56,7 +56,8 @@ public class SecurityConfig {
                     "/api/v1/files",
                     "/api/v1/webhook/**",
                     "/ws/**",                          // WebSocket endpoint
-                    "/api/v1/messages/**" 
+                    "/api/chatbot/**",
+                    "/api/v1/messages/**"
                 ).permitAll()
 
                 .anyRequest().authenticated()

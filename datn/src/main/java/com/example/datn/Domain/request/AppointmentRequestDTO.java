@@ -10,4 +10,5 @@ public class AppointmentRequestDTO {
     private LocalDate appointmentDate;
     private String timeSlot;
     private String note;
+    private String paymentMethod;
 }

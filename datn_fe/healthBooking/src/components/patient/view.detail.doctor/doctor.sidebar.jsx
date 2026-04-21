@@ -3,9 +3,6 @@ import { MessageOutlined } from "@ant-design/icons";
 
 const DoctorSidebar = ({ doctor, selectedTime, onBook }) => {
   const navigate = useNavigate();
-  console.log("doctor:", doctor);
-  console.log("doctor.user:", doctor.user);
-  console.log("doctor.name:", doctor.name);
 
   return (
     <div style={{ position: "sticky", top: 24 }}>

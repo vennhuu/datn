@@ -19,10 +19,6 @@ const DoctorReview = ({ doctorId }) => {
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const currentUserId = currentUser?.id;
 
-  console.log("currentUser:", currentUser);
-  console.log("currentUserId:", currentUserId);
-  console.log("reviews[0].userId:", reviews[0]?.userId);
-
   useEffect(() => { 
     loadReviews(); 
   }, [doctorId]);

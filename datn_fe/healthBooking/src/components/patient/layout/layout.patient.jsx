@@ -4,6 +4,7 @@ import FooterHomepage from "./footer";
 import { Outlet } from "react-router-dom";
 import { ThemeProvider, useTheme } from "../../../context/ThemeContext";
 import { LangProvider } from "../../../context/LangContext";
+import ChatbotWidget from "./chatbotwidget";
 
 const { Header, Content, Footer } = Layout;
 
@@ -49,6 +50,8 @@ const PatientContent = () => {
         <Footer style={{ background: "#0a1e35", textAlign: "center", padding: 0 }}>
           <FooterHomepage />
         </Footer>
+
+        <ChatbotWidget />
       </Layout>
     </ConfigProvider>
   );

@@ -7,13 +7,13 @@ const DoctorHeader = ({ doctor }) => (
     <div style={s.avatarWrap}>
       <img
         src={`${import.meta.env.VITE_BACKEND_URL}/storage/avt_doctor/${doctor.avatar}`}
-        alt={doctor.user?.name}
+        alt={doctor.name}
         style={s.avatar}
       />
     </div>
     <div style={s.info}>
       <Tag color="blue" style={{ marginBottom: 10 }}>{doctor.specialization}</Tag>
-      <h2 style={s.name}>{doctor.degree} {doctor.user?.name}</h2>
+      <h2 style={s.name}>{doctor.name}</h2>
       <div style={s.hospital}>
         <EnvironmentOutlined style={{ color: "#0a6abf" }} />
         <Link to={`/hospital/${doctor.hospital?.id}`} style={s.hospitalLink}>
