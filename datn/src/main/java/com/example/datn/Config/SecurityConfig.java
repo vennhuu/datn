@@ -63,7 +63,8 @@ public class SecurityConfig {
                     "/api/v1/doctors/**",
                     "/api/v1/hospitals/**",
                     "/api/v1/reviews/**" ,
-                    "/api/v1/by-hospital/**"
+                    "/api/v1/by-hospital/**" , 
+                    "/api/v1/messages/**"
                 ).permitAll()
 
                 .anyRequest().authenticated()
