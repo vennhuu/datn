@@ -27,7 +27,7 @@ const DoctorCard = ({ doctor }) => {
         {doctor.avatar ? (
           <img
             src={`${import.meta.env.VITE_BACKEND_URL}/storage/avt_doctor/${doctor.avatar}`}
-            alt={doctor.user?.name}
+            alt={doctor.name}
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
             onError={(e) => { e.target.style.display = "none"; }}
           />
@@ -40,7 +40,7 @@ const DoctorCard = ({ doctor }) => {
       {/* Info */}
       <div style={styles.info}>
         <h3 style={styles.name}>
-          {doctor.degree ? `${doctor.degree} ` : ""}{doctor.user?.name}
+          {doctor.name}
         </h3>
         <p style={styles.spec}>{doctor.specialization || "Đa khoa"}</p>
         <p style={styles.hospital}>🏥 {doctor.hospital?.name || "—"}</p>

@@ -57,7 +57,13 @@ public class SecurityConfig {
                     "/api/v1/webhook/**",
                     "/ws/**",                          // WebSocket endpoint
                     "/api/chatbot/**",
-                    "/api/v1/messages/**"
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/api/v1/doctors/**",
+                    "/api/v1/hospitals/**",
+                    "/api/v1/reviews/**" ,
+                    "/api/v1/by-hospital/**"
                 ).permitAll()
 
                 .anyRequest().authenticated()

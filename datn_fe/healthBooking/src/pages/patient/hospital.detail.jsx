@@ -7,8 +7,7 @@ import HospitalHeader from "../../components/patient/view.detail.hospital/header
 import HospitalIntro from "../../components/patient/view.detail.hospital/hospital.intro";
 import DoctorListByHospitalId from "../../components/patient/view.detail.hospital/doctor.card";
 import { useThemeTokens } from "../../context/themeTokens";
-
-
+import HospitalMap from "../../components/patient/hospital/hospital.map";
 
 const HospitalDetail = () => {
   const { id } = useParams();
@@ -36,9 +35,31 @@ const HospitalDetail = () => {
 
   return (
     <div style={{ background: t.pageBg, minHeight: "100vh", padding: "40px 80px" }}>
-      <HospitalHeader data={data} />
-      <HospitalIntro introduction={data.introduction} />
-      <DoctorListByHospitalId doctors={doctors} />
+
+      {/* ── 2 CỘT: trái (bệnh viện + giới thiệu) | phải (map) ── */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 420px",
+        gap: 24,
+        alignItems: "start",
+      }}>
+        {/* Cột trái */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <HospitalHeader data={data} />
+          <HospitalIntro introduction={data.introduction} />
+        </div>
+
+        {/* Cột phải — sticky */}
+        <div style={{ position: "sticky", top: 24 }}>
+          <HospitalMap address={data.address} hospitalName={data.name} />
+        </div>
+      </div>
+
+      {/* ── Danh sách bác sĩ — full width bên dưới ── */}
+      <div style={{ marginTop: 32 }}>
+        <DoctorListByHospitalId doctors={doctors} />
+      </div>
+
     </div>
   );
 };

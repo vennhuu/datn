@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { SendOutlined, SearchOutlined } from "@ant-design/icons";
 import useChat from "../../hooks/useChat";
-import useConversations from "../../hooks/useConversations"; // ✅ hook mới
+import useConversations from "../../hooks/useConversations";
 
 const getAvatarColor = (name) => {
   const colors = ["#1d4ed8", "#0e9a57", "#f59e0b", "#8b5cf6", "#ef4444", "#0a6abf"];

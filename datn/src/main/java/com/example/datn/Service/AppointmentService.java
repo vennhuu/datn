@@ -198,9 +198,9 @@ public class AppointmentService {
         return stats;
     }
 
-        public List<AppointmentResponseDTO> getAll() {
+    public List<AppointmentResponseDTO> getAll() {
         return appointmentRepository.findAllByOrderByCreatedAtDesc()
                 .stream().map(this::toDTO).toList();
-        }
+    }
     
 }

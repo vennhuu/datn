@@ -57,7 +57,7 @@ public class ChatbotService {
 
         String body = """
             {
-                "model": "llama-3.3-70b-versatile",
+                "model": "llama-3.1-8b-instant",
                 "messages": [
                     {
                         "role": "system",
@@ -68,7 +68,7 @@ public class ChatbotService {
                         "content": "%s"
                     }
                 ],
-                "max_tokens": 1024
+                "max_tokens": 512 
             }
             """.formatted(
                 systemPrompt.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n"),
@@ -97,7 +97,10 @@ public class ChatbotService {
         StringBuilder context = new StringBuilder();
 
         // Load hết bác sĩ — AI tự lọc theo câu hỏi
-        List<Doctor> allDoctors = doctorRepository.findAll();
+        List<Doctor> allDoctors = doctorRepository.findAll()
+            .stream()
+            .limit(10)
+            .toList();
         context.append("DANH SÁCH BÁC SĨ HIỆN CÓ:\n");
         for (Doctor d : allDoctors) {
             context.append(formatDoctor(d)).append("\n");

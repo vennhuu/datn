@@ -27,7 +27,6 @@ public class GlobalException {
 
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
-            BadCredentialsException.class,
             InvalidException.class,
     })
     public ResponseEntity<RestResponse<Object>> handleIdException(Exception ex) {
@@ -55,14 +54,14 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
-    // @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
-    // public ResponseEntity<RestResponse<Object>> handleEnumException(Exception ex) {
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<RestResponse<Object>> handleBadCredentialsExceptionException(Exception ex) {
 
-    //     RestResponse<Object> res = new RestResponse<>();
-    //     res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-    //     res.setError("Bad Request");
-    //     res.setMessage("Giá trị gender không hợp lệ (Nam, Nữ, Khác)");
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage("Email hoặc mật khẩu không đúng");
+        res.setError("Exception occurs...");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 
-    //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
-    // }
 }

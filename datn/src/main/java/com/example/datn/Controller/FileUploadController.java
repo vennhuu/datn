@@ -47,7 +47,7 @@ public class FileUploadController {
         }
 
         String fileName = file.getOriginalFilename();
-        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx"); 
+        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx");
         boolean isValid = allowedExtensions.stream().anyMatch(items -> fileName.toLowerCase().endsWith(items)) ;
 
         if (!isValid) {

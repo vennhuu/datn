@@ -121,7 +121,7 @@ public class DoctorController {
     @APIMessage("Get all doctor by hospital id")
     public ResponseEntity<List<ResDoctor>> getAllDoctorByHospitalId(@PathVariable long id) throws InvalidException{
         if ( !this.hospitalService.existById(id) ) {
-            throw new InvalidException("Khong co benh vien nay") ;
+            throw new InvalidException("Không có bệnh viện nay") ;
         }
         return ResponseEntity.ok(this.doctorService.findByHospitalId(id));
     }
